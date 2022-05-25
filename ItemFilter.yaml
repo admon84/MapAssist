@@ -1,287 +1,1197 @@
-# IMPORTANT: After changing anything in this file, ensure validity using https://jsonformatter.org/yaml-validator
-# More details about how to configure this file can be found at https://github.com/OneXDeveloper/MapAssist/wiki/Item-Filter
-
-# The first line or "Key" is the item base type, in the next case, "Harlequin Crest" is a unique "Shako"
-# Alert to any unique Shako, regardless of any other criteria (sockets, eth)
-Shako:                              # Item Base Type
-  - Qualities: unique               # Rule starts with "-" and lists one of 3 criteria
-
-# Additional criteria can be listed below the first. Do not prefix a "-" to lines with criteria you wish to include
-# as part of the same rule. You can also list multiple values for both Qualities and Sockets as shown in the Thresher
-# example below
+#### Intro ######################################
+# admon84's ItemFilter.yaml for MapAssist
 #
-# This thresher rule is really 2 separate rules. One with 3 criteria and one with a single criteria.
-# The first rule will look for only ethereal threshers with 0 or 4 sockets that are either normal or superior quality
-# The second rule looks only for unique threshers. The criteria listed for the first rule do not apply to the second
-# Therefore, the second rule will log any unique thresher, with any number of sockets
-Thresher:
-  - Ethereal: true
-    Qualities: [normal, superior]
-    Sockets: [0, 4]
-  - Qualities: unique # The Reaper's Toll
+# Reference Guide: https://github.com/OneXDeveloper/MapAssist/wiki/Item-Filter
+#
+# Check for errors with https://yamlchecker.com/
 
-# Listing multiple values
-# Another way to list multiple values for Qualities and Sockets is to list each desired quality or number of sockets
-# on its own line with an extra indent and a "-"
-# This format is supported but its use is discouraged
-# This mage plate rule will look for any normal/superior mage plate with 0 or 3 sockets
-# Because Ethereal: true is not set here, both non-ethereal and ethereal items will trigger this rule
-Mage Plate:
-  - Qualities:
-    - normal
-    - superior
-    Sockets: [0, 3]
 
-# This will show magic and unique monarchs as well as non-magical monarchs with 0 or 4 sockets
-Monarch:
-  - Qualities: [magic, unique] # Stormshield
-  - Qualities: [normal, superior]
-    Sockets: [0, 4]
-
-# This will show a short staff with +1 to skills, +1 to sorc skills, +1 to fire skills, and +1 fire bolt
-# Notifications are turned off for this item specifically using the PlaySoundOnDrop: false option
-Short Staff:
-  - Skills:
-      Fire Bolt: 1
-    Class Skill Tree:
-      Sorceress Fire: 1
-    Class Skills:
-      Sorceress: 1
-    All Skills: 1
-    PlaySoundOnDrop: false
-
-# This is just an object that holds all our commonly used aliases
-# Aliases are labeled by the `&` and then the name and provide a simple way to reuse rule criteria later on
-# They are used by referencing `*` then the name as you'll see in the Mercenary section of this config
-x-bases:
-  - &merc-arm-base
+#### Helms ######################################
+Grim Helm:
+  - Qualities: unique # Vampire Gaze
     Ethereal: true
-    Qualities: [normal, superior]
-    Defense: 680
-    Sockets: [0, 3, 4]
-  - &player-arm-base
+
+Shako:
+  - Qualities: unique # Harlequin Crest
     Ethereal: false
-    Qualities: [normal, superior]
-    Sockets: [0, 3, 4]
-    Defense: 400
-  - &merc-wep-base
-    Ethereal: true
-    Qualities: [normal, superior]
+
+Demonhead:
+  - Qualities: superior # Runeword Base >> Delirium, Dream, Flickering Flame
+    Sockets: [3]
+    Enhanced Defense: 10
+  - Qualities: unique # Andariel's Visage
+
+Bone Visage:
+  - Qualities: superior # Runeword Base >> Delirium, Dream, Flickering Flame
+    Sockets: [3]
+    Enhanced Defense: 10
+  - Qualities: unique # Giant Skull
+
+Spired Helm:
+  - Qualities: unique # Nightwing's Veil
+
+Corona:
+  - Qualities: unique # Crown of Ages
+  - Qualities: set # Griswold's Valor
+
+Grand Crown:
+  - Qualities: unique # Crown of Thieves
+
+#### Armor ######################################
+Armors:
+  - Qualities: magic # Jeweler's Armor >> 4os, 80 Life >> Shop: [H]Anya
+    Ethereal: false
     Sockets: [4]
+    Max Life: 80
 
-# This ring rule will show all unidentified magic, rare, and unique rings that drop on the ground
-Ring:
-  - Qualities: [magic, rare, unique]
-  # The rings below have stats that are only possible on identified items, so these rules
-  # will alert you when a matching item is identified by you or picked up as identified
-  - Qualities: magic
-    Min Area Level: 85
-  - Qualities: magic
-    Magic Find: 40
-  - Qualities: magic
-    Faster Cast Rate: 10
-    Max Mana: 120
-  - Qualities: magic
-    Magic Find: 15
-    Max Mana: 120
-  - Qualities: magic
-    Faster Cast Rate: 10
-    Sum Resist: 30
-  - Qualities: magic
-    Magic Find: 15
-    Sum Resist: 30
-  - Qualities: rare
-    Faster Cast Rate: 10
-    Max Mana: 80
-    Sum Resist: 40
-  - Qualities: unique # SoJ or BK ring
-    All Skills: 1
+Mage Plate:
+  - Qualities: superior # Runeword Base >> Enigma
+    Sockets: [3]
+    Ethereal: false
+    Enhanced Defense: 10
 
-# This will show Barbarian Warcry Sticks when you trade a town vendor that has them for sale
-Glaive:
-  - Qualities: magic
-    Class Skill Tree:
-      Barbarian Warcries: 3
-
-### Some items are inactive
-### To activate them for the loot log, remove the ## in front of them
-### To inactivate items, include a ## in front of them or delete it completely, then save this file.
-### You can test this with Full Rejuvenation Potion below.
-## Full Rejuvenation Potion:
-
-### Mercenary Weapon Bases
-Colossus Voulge:
-  - *merc-wep-base    # This is an alias mentioned above and its criteria applies as if the rules were typed here
-Cryptic Axe:
-  - *merc-wep-base
-  - Qualities: unique # Tomb Reaver is not part of the *merc-wep-base alias so we list its criteria as its own rule
-Giant Thresher:
-  - *merc-wep-base
-  - Qualities: unique # Stormspire is useful for certain player builds (but not mercs, so we don't want Ethereal!)
+Dusk Shroud:
+  - Qualities: [normal, superior] # Runeword Base >> Enigma, Treachery, Duress, Chains of Honor, Bramble, Stone
+    Sockets: [3, 4]
+    Ethereal: false
+  - Qualities: unique # Ormus' Robes
     Ethereal: false
 
-### Mercenary Armor Bases
-Dusk Shroud:
-  - *merc-arm-base
-  - *player-arm-base
-  - Qualities: unique # Ormus' Robes
 Wyrmhide:
-  - *merc-arm-base
-  - *player-arm-base
-Scarab Husk:
-  - *merc-arm-base
-Wire Fleece:
-  - *merc-arm-base
-Diamond Mail:
-  - *merc-arm-base
-Loricated Mail:
-  - *merc-arm-base
-Great Hauberk:
-  - *merc-arm-base
-Boneweave:
-  - *merc-arm-base
-Balrog Skin:
-  - *merc-arm-base
+  - Qualities: [normal, superior] # Runeword Base >> Enigma, Treachery, Duress, Chains of Honor, Bramble, Stone
+    Sockets: [3, 4]
+    Ethereal: false
+
+Archon Plate:
+  - Qualities: normal # Eth Runeword Base >> Enigma, Treachery, Duress, Chains of Honor, Bramble, Stone >> Needs Cube Socket
+    Sockets: [0]
+    Ethereal: true
+  - Qualities: [normal, superior] # Runeword Base >> Enigma, Treachery, Duress, Chains of Honor, Bramble, Stone
+    Sockets: [3, 4]
+
 Kraken Shell:
-  - *merc-arm-base
-Hellforge Plate:
-  - *merc-arm-base
+  - Qualities: normal # Eth Runeword Base >> Treachery, Duress, Fortitude, Chains of Honor, Bramble, Stone >> Needs Cube Socket
+    Sockets: [0]
+    Ethereal: true
+  - Qualities: [normal, superior] # Eth Runeword Base >> Treachery, Duress, Fortitude, Chains of Honor, Bramble, Stone
+    Sockets: [3, 4]
+    Ethereal: true
+  - Qualities: unique # Leviathan
+
 Lacquered Plate:
-  - *merc-arm-base
-  - Qualities: Set # Tal Rasha's Guardianship
-Shadow Plate:
-  - *merc-arm-base
+  - Qualities: normal # Eth Runeword Base >> Treachery, Duress, Fortitude, Chains of Honor, Bramble, Stone >> Needs Cube Socket
+    Sockets: [0]
+    Ethereal: true
+  - Qualities: [normal, superior] # Eth Runeword Base >> Treachery, Duress, Fortitude, Chains of Honor, Bramble, Stone
+    Sockets: [3, 4]
+    Ethereal: true
+  - Qualities: set # Tal Rasha's Guardianship
+
 Sacred Armor:
-  - *merc-arm-base
+  - Qualities: normal # Eth Runeword Base >> Treachery, Duress, Fortitude, Chains of Honor, Bramble, Stone >> Needs Cube Socket
+    Sockets: [0]
+    Ethereal: true
+  - Qualities: [normal, superior] # Eth Runeword Base >> Treachery, Duress, Fortitude, Chains of Honor, Bramble, Stone
+    Sockets: [3, 4]
+    Ethereal: true
   - Qualities: unique # Tyrael's Might
   - Qualities: set # Immortal King's Soul Cage
 
-### Bases
-Archon Plate:
-  - *merc-arm-base
-  - *player-arm-base
-Flail:
-  - Qualities: [normal, superior]
-    Sockets: [4, 5]
-Crystal Sword:
-  - Qualities: [normal, superior]
-    Sockets: [4, 5]
-Phase Blade:
-  - Qualities: [normal, superior]
-    Sockets: [5]
-Matriarchal Javelin:
-  - Qualities: [magic, rare]
-  - Qualities: unique # Thunderstroke
-Assassin Katars:
-  - Tiers: [exceptional, elite]
-    Qualities: [normal, superior]
+Serpentskin Armor:
+  - Qualities: unique # Skin of the Vipermagi
+    Ethereal: false
+
+Mesh Armor:
+  - Qualities: unique # Shaftstop
+
+Russet Armor:
+  - Qualities: unique # Skullder's Ire
+
+Balrog Skin:
+  - Qualities: unique # Arkaine's Valor
+
+Templar Coat:
+  - Qualities: unique # Guardian Angel
+
+Cuirass:
+  - Qualities: unique # Duriel's Shell
+    Ethereal: true
+
+Wire Fleece:
+  - Qualities: unique # The Gladiator's Bane
+    Ethereal: true
+
+#### Shields ####################################
+Shields:
+  - Tiers: elite
+    Qualities: [normal, superior] # Runeword Base >> Dream
     Sockets: [3]
+    Ethereal: false
 
-### Misc
-Amulet:
-  - Qualities:
-    - magic
-    - rare
-    - unique
-    - set
-Jewel:
-  - Qualities:
-    - magic
-    - rare
-    - unique # Rainbow Facet
-Small Charm:
-  - Qualities: [magic, unique]
-Large Charm:
-  - Qualities: unique
-Grand Charm:
-  - Qualities: [magic, unique]
-Key of Terror:
-Key of Hate:
-Key of Destruction:
-Twisted Essence of Suffering:
-Charged Essence of Hatred:
-Burning Essence of Terror:
-Festering Essence of Destruction:
+Monarch:
+  - Qualities: [normal, superior] # Runeword Base >> Phoenix, Spirit
+    Sockets: [0, 4]
+  - Qualities: magic # Jeweler's Monarch >> 4os, 17 FHR
+    Ethereal: false
+    Sockets: [4]
+    Faster Hit Recovery: 17
+  - Qualities: magic # Jeweler's Monarch >> 4os, 30 FBR
+    Ethereal: false
+    Sockets: [4]
+    Faster Block Rate: 30
 
-### Boots
-Boots:
-  - Tiers: [exceptional, elite]
-    Qualities: rare
+Ward:
+  - Qualities: magic # Jeweler's Ward >> 4os, 30 FBR
+    Ethereal: false
+    Sockets: [4]
+    Faster Block Rate: 30
 
-### Gloves
+#### Gloves #####################################
 Gloves:
-  - Tiers: [exceptional, elite]
+  - Tiers: elite # Unid Rare Gloves
     Qualities: rare
-  # This will show 3/20 Javazon Gloves when a town vendor has a pair for sale
-  # It will work with all exceptional and elite gloves
-  - Tiers: [exceptional, elite]
-    Qualities: magic
+    Ethereal: false
+  - Qualities: rare # Rare Gloves >> 20 IAS, +2 Class Skill Tree
+    Ethereal: false
     Increased Attack Speed: 20
     Class Skill Tree:
-        Amazon Javelin And Spear: 3
+      Any: 2
+  - Qualities: rare # Rare Gloves >> 20 IAS, 14 Str
+    Ethereal: false
+    Increased Attack Speed: 20
+    Strength: 14
+  - Qualities: rare # Rare Gloves >> 20 IAS, 14 Dev
+    Ethereal: false
+    Increased Attack Speed: 20
+    Dexterity: 14
+  - Qualities: rare # Rare Gloves >> 20 IAS, 3 LL, 3 ML
+    Ethereal: false
+    Increased Attack Speed: 20
+    Life Steal: 3
+    Mana Steal: 3
+  - Qualities: rare # Rare Gloves >> 20 IAS, 10 Str, 10 Dex
+    Ethereal: false
+    Increased Attack Speed: 20
+    Strength: 10
+    Dexterity: 10
+  - Qualities: magic # Magic Gloves >> 20 IAS, +3 Javazon Skills >> Shop: [H]Anya, [NM]Fara
+    Ethereal: false
+    Increased Attack Speed: 20
+    Class Skill Tree:
+      Amazon Javelin And Spear: 3
 
-### Helmets
-Bone Visage:
-  - Qualities: [normal, superior]
-    Sockets: [0, 3]
-Demonhead:
-  - Qualities: [normal, superior]
-    Sockets: [0, 3]
-  - Qualities: unique # Andariel's Visage
+Vampirebone Gloves:
+  - Qualities: unique # Dracul's Grasp
 
-### Circlets
-Circlet:
-  - Qualities: [magic, rare]
+Heavy Bracers:
+  - Qualities: set # Trang-oul's Claws
+
+Battle Gauntlets:
+  - Qualities: unique # Magefist
+
+Ogre Gauntlets:
+  - Qualities: unique # Steelrend
+
+Chain Gloves:
+  - Qualities: unique # Chance Guards
+
+#### Boots ######################################
+Boots:
+  - Tiers: elite # Unid Rare Boots
+    Qualities: rare
+    Ethereal: false
+  - Qualities: rare # Rare Boots >> 30 FRW, 10 FHR, Resists
+    Ethereal: false
+    Faster Run Walk: 30
+    Faster Hit Recovery: 10
+    Sum Resist: 40
+
+Battle Boots:
+  - Qualities: unique # War Traveler
+
+War Boots:
+  - Qualities: unique # Gore Rider
+
+Scarabshell Boots:
+  - Qualities: unique # Sandstorm Trek
+
+Boneweave Boots:
+  - Qualities: unique # Marrowwalk
+
+Myrmidon Greaves:
+  - Qualities: unique # Shadow Dancer
+
+Sharkskin Boots:
+  - Qualities: unique # Waterwalk
+
+#### Belts ######################################
+Belts:
+  - Tiers: elite # Unid Rare Belt
+    Qualities: rare
+    Ethereal: false
+  - Qualities: rare # Rare Belt >> 24 FHR, Str, Life
+    Ethereal: false
+    Faster Hit Recovery: 24
+    Strength: 20
+    Max Life: 40
+  - Qualities: rare # Rare Belt >> 24 FHR, Str, GF
+    Ethereal: false
+    Faster Hit Recovery: 24
+    Strength: 20
+    Gold Find: 60
+  - Qualities: magic # Magic Belt >> 80 GF, Resists >> Shop: [NM]Fara
+    Gold Find: 80
+    Sum Resist: 30
+
+Mithril Coil:
+  - Qualities: unique # Verdungo's Hearty Cord
+    Ethereal: false
+
+Spiderweb Sash:
+  - Qualities: unique # Arachnid Mesh
+    Ethereal: false
+
+Sharkskin Belt:
+  - Qualities: unique # Razortail
+    Ethereal: false
+
+Demonhide Sash:
+  - Qualities: unique # String of Ears
+    Ethereal: false
+
+War Belt:
+  - Qualities: unique # Thundergod's Vigor
+    Ethereal: false
+
+Vampirefang Belt:
+  - Qualities: unique # Nosferatu's Coil
+    Ethereal: false
+
+#### Barbarian Helms ############################
+Barbarian Helms:
+  - Tiers: elite # Unid Rare Barb Helm
+    Qualities: rare
+    Ethereal: false
+  - Qualities: [normal, superior] # Runeword Base >> Delirium, Flickering Flame >> +2 Battle Orders
+    Ethereal: false
+    Sockets: [3]
+    Skills:
+      Battle Orders: 2
+  - Qualities: [normal, superior] # Runeword Base >> Delirium, Flickering Flame >> +2 Find Item
+    Ethereal: false
+    Sockets: [3]
+    Skills:
+      Find Item: 2
+  - Tiers: elite # Magic Barb Helm >> +4 Battle Orders
+    Qualities: magic
+    Ethereal: false
+    Skills:
+      Battle Orders: 4
+  - Tiers: elite # Rare Barb Helm >> 2os, +4 Battle Orders
+    Qualities: rare
+    Ethereal: false
+    Sockets: [2]
+    Skills:
+      Battle Orders: 4
+
+Slayer Guard:
+  - Qualities: unique # Arreat's Face
+
+#### Druid Pelt #################################
+Druid Helms:
+  - Tiers: elite # Unid Rare Druid Pelt
+    Qualities: rare
+    Ethereal: false
+  - Tiers: [exceptional, elite] # Runeword Base >> Delerium, Flicking Flame >> +1 Tornado
+    Qualities: [normal, superior]
+    Ethereal: false
+    Sockets: [3]
+    Skills:
+      Tornado: 1
+  - Tiers: [exceptional, elite] # Runeword Base >> Delerium, Flicking Flame  >> +1 Hurricane
+    Qualities: [normal, superior]
+    Ethereal: false
+    Sockets: [3]
+    Skills:
+      Hurricane: 1
+  - Tiers: [exceptional, elite] # Rare Druid Pelt >> 2os, +2 Tornado
+    Qualities: rare
+    Ethereal: false
+    Sockets: [2]
+    Skills:
+      Tornado: 2
+  - Tiers: [exceptional, elite] # Magic Druid Pelt >> +2 Tornado
+    Qualities: magic
+    Ethereal: false
+    Skills:
+      Tornado: 2
+
+Totemic Mask:
+  - Qualities: unique # Jalal's Mane
+    Ethereal: false
+
+#### Paladin Shields ############################
+Paladin Shields:
+  - Tiers: elite # Unid Rare Pally Shield
+    Qualities: rare
+    Ethereal: false
+  - Qualities: [normal, superior] # Runeword Base >> Spirit >> +All Res
+    Sockets: [0, 4]
+    All Resist: 40
+  - Tiers: elite # Runeword Base >> Exile >> +60% ED
+    Qualities: superior
+    Sockets: [4]
+    Enhanced Damage: 60
+  - Tiers: [exceptional, elite] # Rare Pally Shield >> 2os, +2 Paladin Skills, 30 FBR
+    Qualities: rare
+    Sockets: [2]
+    Faster Block Rate: 30
+    Class Skills:
+      Paladin: 2
+  - Tiers: [exceptional, elite] # Magic Pally Shield >> 4os, 30 FBR
+    Qualities: magic
+    Sockets: [4]
+    Faster Block Rate: 30
+  - Tiers: [exceptional, elite] # Magic Pally Shield >> +2 Paladin Skills, 30 FBR
+    Qualities: magic
+    Faster Block Rate: 30
+    Class Skills:
+      Paladin: 2
+
+Gilded Shield:
+  - Qualities: unique # Herald Of Zakarum
+
+Sacred Rondache:
+  - Qualities: unique # Alma Negra
+
+Vortex Shield:
+  - Qualities: set # Griswold's Honor
+
+#### Necromancer Shrunken Heads #################
+Necromancer Shields:
+  - Tiers: elite # Unid Rare Necro Offhand
+    Qualities: rare
+    Ethereal: false
+  - Qualities: [normal, superior] # Runeword Base >> Splendor >> +1 Bone Spirit, +1 Bone Spear
+    Ethereal: false
+    Sockets: [2]
+    Skills:
+      Bone Spear: 1
+      Bone Spirit: 1
+  - Qualities: [normal, superior] # Runeword Base >> Splendor >> +2 Bone Spirit
+    Ethereal: false
+    Sockets: [2]
+    Skills:
+      Bone Spirit: 2
+  - Qualities: [normal, superior] # Runeword Base >> Splendor >> +1 Poison Nova, +1 Poison Explosion
+    Ethereal: false
+    Sockets: [2]
+    Skills:
+      Poison Nova: 1
+      Poison Explosion: 1
+  - Qualities: [normal, superior] # Runeword Base >> Splendor >> +2 Poison Nova
+    Ethereal: false
+    Sockets: [2]
+    Skills:
+      Poison Nova: 2
+  - Qualities: magic # Magic Necro Offhand >> +2 Bone Spirit
+    Ethereal: false
+    Skills:
+      Bone Spirit: 2
+  - Qualities: magic # Magic Necro Offhand >> +2 Bone Spear
+    Ethereal: false
+    Skills:
+      Bone Spear: 2
+  - Qualities: magic # Magic Necro Offhand >> +2 Poison Nova
+    Ethereal: false
+    Skills:
+      Poison Nova: 2
+  - Qualities: rare # Rare Necro Offhand >> +2 Bone Spirit
+    Ethereal: false
+    Sockets: [2]
+    Skills:
+      Bone Spirit: 2
+  - Qualities: rare # Rare Necro Offhand >> +2 Bone Spear
+    Ethereal: false
+    Sockets: [2]
+    Skills:
+      Bone Spear: 2
+  - Qualities: rare # Rare Necro Offhand >> +2 Poison Nova
+    Ethereal: false
+    Sockets: [2]
+    Skills:
+      Poison Nova: 2
+
+Hierophant Trophy:
+  - Qualities: unique # Homunculus
+    Ethereal: false
+
+Bloodlord Skull:
+  - Qualities: unique # Darkforce Spawn
+    Ethereal: false
+
+#### Axes #######################################
+Berserker Axe:
+  - Qualities: [normal, superior] # Runeword Base >> Grief
+    Ethereal: false
+    Sockets: [5]
+    Enhanced Damage: 5
+  - Qualities: [normal, superior] # Runeword Base >> Breath of the Dying
+    Ethereal: true
+    Sockets: [0, 6]
+    Enhanced Damage: 10
+  - Qualities: [normal, superior] # Runeword Base >> Grief, Beast, Doom, Last Wish, Hand of Justice, Fortitude
+    Ethereal: false
+    Sockets: [0, 4, 5, 6]
+  - Qualities: [normal, superior] # Runeword Base >> Oath, Death, Breath of the Dying
+    Ethereal: true
+    Sockets: [0, 4, 5, 6]
+  - Qualities: unique # Death Cleaver
+    Ethereal: true
+
+Ettin Axe:
+  - Qualities: unique # Rune Master
+    Ethereal: true
+
+#### Bows #######################################
+Bows:
+  - Tiers: elite # Runeword Base >> Faith, Ice, Insight, Mist, Breath of the Dying
+    Qualities: superior
+    Sockets: [4, 6]
+    Enhanced Damage: 10
+
+Great Bow:
+  - Qualities: superior # Runeword Base >> Faith, Ice, Insight, Mist
+    Sockets: [4]
+    Enhanced Damage: 10
+
+Diamond Bow:
+  - Qualities: superior # Runeword Base >> Faith, Ice, Insight, Mist
+    Sockets: [4]
+    Enhanced Damage: 10
+
+Shadow Bow:
+  - Qualities: superior # Runeword Base >> Faith, Ice, Insight, Mist
+    Sockets: [4]
+    Enhanced Damage: 10
+
+Crusader Bow:
+  - Qualities: superior # Runeword Base >> Faith, Ice, Insight, Mist
+    Sockets: [4]
+    Enhanced Damage: 10
+  - Qualities: superior # Runeword Base >> Breath of the Dying
+    Ethereal: true
+    Sockets: [0, 6]
+    Enhanced Damage: 10
+
+Hydra Bow:
+  - Qualities: unique # Windforce
+  - Qualities: superior # Runeword Base >> Faith, Ice, Insight, Mist
+    Sockets: [4]
+    Enhanced Damage: 10
+  - Qualities: superior # Runeword Base >> Breath of the Dying
+    Ethereal: true
+    Sockets: [0, 6]
+    Enhanced Damage: 10
+
+Ward Bow:
+  - Qualities: unique # Widowmaker
+
+Short Siege Bow:
+  - Qualities: unique # Witchwild String
+
+#### Crossbows ##################################
+Colossus Crossbow:
+  - Tiers: elite
+    Qualities: superior # Runeword Base >> Faith, Ice, Insight, Mist
+    Sockets: [4]
+    Enhanced Damage: 10
+
+#### Daggers ####################################
+Daggers:
+  - Qualities: magic # Magic Daggers >> +3 Barb Warcries >> Shop: [H]Malah, [H]Anya
+    Class Skill Tree:
+      Barbarian Warcries: 3
+
+Bone Knife:
+  - Qualities: unique # Wizardspike
+
+Fanged Knife:
+  - Qualities: unique # Fleshripper
+
+#### Javelins ###################################
+Javelins:
+  - Qualities: magic # Magic Javelins >> +3 Barb Warcries >> Shop: [H]Malah, [H]Anya
+    Class Skill Tree:
+      Barbarian Warcries: 3
+
+Ceremonial Javelin:
+  - Qualities: unique # Titan's Revenge
+
+#### Maces ######################################
+Flail:
+  - Qualities: [normal, superior] # Runeword Base >> Heart of the Oak, Call to Arms
+    Sockets: [4, 5]
+  - Qualities: superior # Runeword Base >> Black
+    Sockets: [3]
+    Enhanced Damage: 10
+
+Knout:
+  - Qualities: [normal, superior] # Runeword Base >> Black
+    Sockets: [3]
+  - Qualities: [normal, superior] # Runeword Base >> Oath
+    Ethereal: true
+    Sockets: [4]
+  - Qualities: unique # Baezil's Vortex
+
+Scourge:
+  - Qualities: [normal, superior] # Runeword Base >> Black
+    Sockets: [3]
+  - Qualities: [normal, superior] # Runeword Base >> Oath
+    Ethereal: true
+    Sockets: [4]
+  - Qualities: unique # Stormlash
+
+#### Polearms ###################################
+Thresher:
+  - Qualities: [normal, superior] # Eth Runeword Base >> Insight, Infinity, Pride, Obedience, Destruction, Doom, Rift
+    Sockets: [0, 4, 5]
+    Ethereal: true
+  - Qualities: unique # The Reaper's Toll
+    Ethereal: true
+
+Giant Thresher: 
+  - Qualities: [normal, superior] # Eth Runeword Base >> Insight, Infinity, Pride, Obedience, Destruction, Doom, Rift
+    Sockets: [0, 4, 5]
+    Ethereal: true
+
+Colossus Voulge:
+  - Qualities: [normal, superior] # Eth Runeword Base >> Insight, Infinity, Pride, Rift
+    Sockets: [4]
+    Ethereal: true
+
+Cryptic Axe:
+  - Qualities: [normal, superior] # Eth Runeword Base >> Insight, Infinity, Pride, Rift
+    Sockets: [4]
+    Ethereal: true
+  - Qualities: unique # Tomb Reaver
+    Ethereal: true
+
+Ogre Axe:
+  - Qualities: unique # Bonehew
+    Ethereal: true
+
+#### Spears #####################################
+Yari: 
+  - Qualities: unique # Hone Sundan
+    Ethereal: true
+
+Fuscina:
+  - Qualities: unique # Kelpie Snare
+    Ethereal: true
+
+Stygian Pike:
+  - Qualities: [normal, superior] # Runeword Base >> Infinity, Pride, Obedience
+    Sockets: [0, 4]
+    Ethereal: true
+
+Mancatcher:
+  - Qualities: [normal, superior] # Runeword Base >> Infinity, Pride, Obedience
+    Sockets: [4, 5]
+    Ethereal: true
+
+War Pike:
+  - Qualities: [normal, superior] # Runeword Base >> Infinity, Pride, Obedience
+    Sockets: [4, 5]
+    Ethereal: true
+  - Qualities: [normal, superior] # Runeword Base >> Breath of the Dying
+    Ethereal: true
+    Sockets: [6]
+    Enhanced Damage: 10
+
+#### Scepters ###################################
+Scepters:
+  - Qualities: [normal, superior] # Runeword Base >> Call to Arms, Hand of Justice >> +1 Holy Shield
+    Sockets: [0, 4, 5]
+    Skills:
+      Holy Shield: 1
+  - Qualities: [normal, superior] # Runeword Base >> Call to Arms, Hand of Justice >> +1 FoH
+    Sockets: [0, 4, 5]
+    Skills:
+      Fist Of The Heavens: 1
+  - Qualities: [normal, superior] # Runeword Base >> Call to Arms, Hand of Justice >> +1 Hammers
+    Sockets: [0, 4, 5]
+    Skills:
+      Blessed Hammer: 1
+
+Caduceus:
+  - Qualities: set # Griswold's Redemption
+  - Qualities: unique # Astreon's Iron Ward
+
+Mighty Scepter:
+  - Qualities: unique # Heaven's Light, Redeemer
+
+#### Staves #####################################
+Staves:
+  - Qualities: [normal, superior] # Runeword Base >> Memory, Insight, Heart of the Oak
+    Sockets: [0, 4]
+    Skills:
+      Energy Shield: 3
+  - Qualities: [normal, superior] # Light Sorc Runeword Base >> Obsession
+    Sockets: [0, 6]
+    Class Skill Tree:
+      Sorceress Lightning: 1
+  - Qualities: [normal, superior] # Cold Sorc Runeword Base >> Obsession
+    Sockets: [0, 6]
+    Class Skill Tree:
+      Sorceress Cold: 1
+  - Qualities: [normal, superior] # Fire Sorc Runeword Base >> Obsession
+    Sockets: [0, 6]
+    Class Skill Tree:
+      Sorceress Fire: 1
+
+Elder Staff:
+  - Qualities: unique # Ondal's Wisdom
+  - Qualities: set # Naj's Puzzler
+
+Archon Staff:
+  - Qualities: unique # Mang Song's Lesson
+
+#### Swords #####################################
+Crystal Sword:
+  - Qualities: [normal, superior] # Runeword Base >> Spirit, Call to Arms
+    Sockets: [4, 5]
+  - Qualities: magic # Magic Crystal Sword >> +3 Barb Warcries >> Shop: [H]Ormus
+    Class Skill Tree:
+      Barbarian Warcries: 3
+
+Broad Sword:
+  - Qualities: [normal, superior] # Runeword Base >> Spirit
+    Ethereal: true
+    Sockets: [4]
+
+Giant Sword:
+  - Qualities: magic # Magic Giant Sword >> +3 Barb Warcries >> Shop: [NM]Fara
+    Class Skill Tree:
+      Barbarian Warcries: 3
+
+Phase Blade:
+  - Qualities: [magic, rare] # Unid Magic/Rare Phase
+  - Qualities: [magic, rare] # Magic/Rare Phase >> 4os
+    Sockets: [4]
+  - Qualities: [normal, superior] # Runeword Base >> Oath, Grief, Destruction Last Wish, Unbending Will
+    Sockets: [4, 5, 6]
+  - Qualities: unique # Azurewrath
+
+Highland Blade:
+  - Qualities: [normal, superior] # Runeword Base >> Oath
+    Ethereal: true
+    Sockets: [4]
+
+Balrog Blade:
+  - Qualities: [normal, superior] # Runeword Base >> Oath
+    Ethereal: true
+    Sockets: [4]
+
+Cryptic Sword:
+  - Qualities: [normal, superior] # Runeword Base >> Oath
+    Ethereal: true
+    Sockets: [4]
+
+Zweihander:
+  - Qualities: [normal, superior] # Runeword Base >> Grief
+    Ethereal: false
+    Sockets: [5]
+
+Mythical Sword:
+  - Qualities: set # Bul-Kathos' Tribal Guardian
+
+Colossus Blade:
+  - Qualities: [normal, superior] # Runeword Base >> Grief
+    Ethereal: false
+    Sockets: [5]
+    Enhanced Damage: 5
+  - Qualities: [normal, superior] # Runeword Base >> Breath of the Dying
+    Ethereal: true
+    Sockets: [0, 6]
+    Enhanced Damage: 10
+  - Qualities: [normal, superior] # Runeword Base >> Oath, Death, Breath of the Dying
+    Ethereal: true
+    Sockets: [0, 4, 5, 6]
+  - Qualities: [normal, superior] # Runeword Base >> Grief, Unbending Will
+    Sockets: [5, 6]
+  - Qualities: set # Bul-Kathos' Sacred Charge
+  - Qualities: unique # The Grandfather
+
+#### Throwing ###################################
+Winged Knife:
+  - Qualities: unique # Warshrike
+
+Winged Axe:
+  - Qualities: unique # Lacerator
+
+#### Wands ######################################
+Wands:
+  - Qualities: [normal, superior] # Runeword Base >> White
+    Sockets: [0, 2]
+    Skills:
+      Bone Spear: 1
+      Bone Spirit: 1
+  - Qualities: [normal, superior] # Runeword Base >> White
+    Sockets: [0, 2]
+    Skills:
+      Bone Spirit: 3
+  - Qualities: [normal, superior] # Runeword Base >> White
+    Sockets: [0, 2]
+    Skills:
+      Bone Spear: 3
+  - Qualities: [normal, superior] # Runeword Base >> White
+    Sockets: [0, 2]
+    Skills:
+      Teeth: 1
+      Bone Spear: 1
+
+#### Amazon Weapons #############################
+Amazon Bows:
+  - Qualities: [normal, superior] # Runeword Base >> Faith, Insight
+    Sockets: [4]
+    Class Skill Tree:
+      Amazon Bow And Crossbow: 2
+
+Matriarchal Javelin:
+  - Qualities: unique # Thunderstroke
+
+Matriarchal Spear:
+  - Qualities: [normal, superior] # Amazon Spear Runeword Base >> Infinity, Pride, Obedience
+    Sockets: [4, 5]
+    Ethereal: true
+
+#### Assassin Katars ############################
+Assassin Katars:
+  - Tiers: [exceptional, elite] # Unid Rare Claw
+    Qualities: rare
+    Ethereal: false
+  - Qualities: [magic, rare] # Magic/Rare Claw >> +4 Traps Claw
+    Class Skill Tree:
+      Assassin Traps: 4
+  - Qualities: [magic, rare] # Magic/Rare Claw >> +4 LS Claw
+    Skills:
+      Lightning Sentry: 4
+  - Qualities: [normal, superior] # Runeword Base >> Chaos, Fury
+    Sockets: [0, 3]
+    Skills:
+      Lightning Sentry: 3
+  - Qualities: [normal, superior] # Runeword Base >> Chaos, Fury
+    Sockets: [0, 3]
+    Skills:
+      Lightning Sentry: 2
+      Mind Blast: 1
+  - Qualities: [normal, superior] # Runeword Base >> Chaos, Fury
+    Sockets: [0, 3]
+    Skills:
+      Lightning Sentry: 2
+      Venom: 1
+  - Qualities: [normal, superior] # Runeword Base >> Chaos, Fury
+    Sockets: [0, 3]
+    Skills:
+      Lightning Sentry: 2
+      Wake Of Inferno: 1
+  - Qualities: [normal, superior] # Runeword Base >> Chaos, Fury
+    Sockets: [0, 3]
+    Skills:
+      Mind Blast: 2
+      Dragon Flight: 1
+  - Qualities: [normal, superior] # Runeword Base >> Chaos, Fury
+    Sockets: [0, 3]
+    Skills:
+      Shadow Master: 1
+      Weapon Block: 1
+      Venom: 1
+
+#### Sorceress Orbs #############################
+Dimensional Shard:
+  - Qualities: unique # Death's Fathom
+
+Eldritch Orb:
+  - Qualities: unique # Eschuta's Temper
+
+Swirling Crystal:
+  - Qualities: unique # The Oculus
+
+#### Circlets ###################################
+Circlets:
+  - Qualities: magic # Unid Magic Circlet
+  - Qualities: rare # Unid Rare Circlet
+  - Qualities: superior # Runeword Base >> Dream
+    Sockets: [3]
+    Ethereal: false
+    Enhanced Defense: 10
+  - Qualities: rare # Rare Circlet >> 2os, +2 Class Skills, 20 FCR
+    Class Skills:
+      Any: 2
+    Faster Cast Rate: 20
+    Sockets: [2]
+  - Qualities: rare # Rare Circlet >> +2 Class Skills, 20 FCR, Str, Life
+    Class Skills:
+      Any: 2
+    Faster Cast Rate: 20
+    Strength: 10
+    Max Life: 10
+  - Qualities: rare # Rare Circlet >> +2 Class Skills, 20 FCR, Dex, Life
+    Class Skills:
+      Any: 2
+    Faster Cast Rate: 20
+    Dexterity: 10
+    Max Life: 10
+  - Qualities: rare # Rare Circlet >> +2 Class Skill Tree, 20 FCR, Str, Life
+    Class Skill Tree:
+      Any: 2
+    Faster Cast Rate: 20
+    Strength: 10
+    Max Life: 10
+  - Qualities: rare # Rare Circlet >> +2 Class Skill Tree, 20 FCR, Dex, Life
+    Class Skill Tree:
+      Any: 2
+    Faster Cast Rate: 20
+    Dexterity: 10
+    Max Life: 10
+  - Qualities: rare # Rare Circlet >> 2os, +2 Class Skill Tree, 20 FCR
+    Class Skill Tree:
+      Any: 2
+    Faster Cast Rate: 20
+    Sockets: [2]
+  - Qualities: rare # Rare Circlet >> 2os, +2 Amazon Skills, 20 FRW
+    Class Skills:
+      Amazon: 2
+    Faster Run Walk: 20
+    Sockets: [2]
+  - Qualities: rare # Rare Circlet >> +2 Amazon Skills, 20 FRW, Str, Life
+    Class Skills:
+      Amazon: 2
+    Faster Run Walk: 20
+    Strength: 10
+    Max Life: 10
+  - Qualities: rare # Rare Circlet >> +2 Amazon Skills, 20 FRW, Dex, Life
+    Class Skills:
+      Amazon: 2
+    Faster Run Walk: 20
+    Dexterity: 10
+    Max Life: 10
+  - Qualities: magic # Magic Circlet >> +2 Class Skill Tree, 20 FCR
+    Class Skill Tree:
+      Any: 2
+    Faster Cast Rate: 20
+    Ethereal: false
+  - Qualities: magic # Magic Circlet >> +2 Class Skill Tree, 30 FRW
+    Class Skill Tree:
+      Any: 2
+    Faster Run Walk: 30
+    Ethereal: false
+  - Qualities: magic # Magic Circlet >> +2 Class Skill Tree, 25+ Str
+    Class Skill Tree:
+      Any: 2
+    Strength: 25
+    Ethereal: false
+  - Qualities: magic # Magic Circlet >> +2 Class Skill Tree, 100+ Life
+    Class Skill Tree:
+      Any: 2
+    Max Life: 100
+    Ethereal: false
+  - Qualities: magic # Magic Circlet >> 3os, 20 FCR
+    Faster Cast Rate: 20
+    Sockets: [3]
+    Ethereal: false
+  - Qualities: magic # Magic Circlet >> 3os, 30 FRW
+    Faster Run Walk: 30
+    Sockets: [3]
+    Ethereal: false
+  - Qualities: magic # Magic Circlet >> 3os, 25+ Str
+    Strength: 25
+    Sockets: [3]
+    Ethereal: false
+  - Qualities: magic # Magic Circlet >> 3os, 100+ Life
+    Max Life: 100
+    Sockets: [3]
+    Ethereal: false
+
 Tiara:
-  - Qualities: [magic, rare]
   - Qualities: unique # Kira's Guardian
-Coronet:
-  - Qualities: [magic, rare]
+
 Diadem:
-  - Qualities: [magic, rare]
   - Qualities: unique # Griffon's Eye
 
-### Druid Pelts
-Druid Helms:
-  - Tiers: elite
-    Qualities: [magic, rare]
+#### Jewels #####################################
+Jewel:
+  - Qualities: magic # Unid Magic Jewel
+    PlaySoundOnDrop: false
+  - Qualities: rare # Unid Rare Jewel
+  - Qualities: unique # Unid Rainbow Facet
+  - Qualities: [magic, rare] # Magic Jewel >> 35+ ED
+    Enhanced Damage: 35
+  - Qualities: [magic, rare] # Magic Jewel >> 15 IAS, 30+ ED
+    Enhanced Damage: 30
+    Increased Attack Speed: 15
+  - Qualities: [magic, rare] # Magic Jewel >> 30+ ED, +8 Min Dmg
+    Enhanced Damage: 30
+    Min Damage: 8
+  - Qualities: [magic, rare] # Magic Jewel >> 7 FHR, Resists
+    Sum Resist: 48
+    Faster Hit Recovery: 7
+  - Qualities: [magic, rare] # Magic Jewel >> 8+ Str, Resists
+    Sum Resist: 48
+    Strength: 8
+  - Qualities: [magic, rare] # Magic Jewel >> 8+ Dex, Resists
+    Sum Resist: 48
+    Dexterity: 8
+  - Qualities: [magic, rare] # Magic Jewel >> 15 Life, Resists
+    Sum Resist: 48
+    Max Life: 15
+  - Qualities: [magic, rare] # Magic Jewel >> Resists
+    Sum Resist: 60
+  - Qualities: [magic, rare] # Magic Jewel >> 18 Min Dmg
+    Min Damage: 18
+  - Qualities: [magic, rare] # Magic Jewel >> 20 Max Dmg
+    Max Damage: 20
 
-### Barbarian Helms
-Barbarian Helms:
-  - Tiers: elite
-    Qualities: [magic, rare]
+#### Amulets ####################################
+Amulet:
+  #- Qualities: magic # Unid Magic Amulet
+  - Qualities: rare # Unid Rare Amulet
+  - Qualities: set # Unid Set Amulet
+  - Qualities: unique # Unid Unique Amulet
+  - Qualities: magic # Magic Amulet >> +3 Class Skill Tree, Str
+    Class Skill Tree:
+      Any: 3
+    Strength: 30
+  - Qualities: magic # Magic Amulet >> +3 Class Skill Tree, 10+ FCR
+    Class Skill Tree:
+      Any: 3
+    Faster Cast Rate: 10
+  - Qualities: magic # Magic Amulet >> +3 Class Skill Tree, Dex
+    Class Skill Tree:
+      Any: 3
+    Dexterity: 30
+  - Qualities: magic # Magic Amulet >> +3 Class Skill Tree, Life
+    Class Skill Tree:
+      Any: 3
+    Max Life: 100
+  - Qualities: magic # Magic Amulet >> +2 Class Skills, Dex
+    Class Skills:
+      Any: 2
+    Dexterity: 30
+  - Qualities: magic # Magic Amulet >> +2 Class Skills, Life
+    Class Skills:
+      Any: 2
+    Max Life: 100
+  - Qualities: rare # Rare Amulet >> +2 Class Skills, 10+ FCR, Life, Mana
+    Class Skills:
+      Any: 2
+    Faster Cast Rate: 10
+    Max Life: 50
+    Max Mana: 80
+  - Qualities: rare # Rare Amulet >> +2 Class Skills, 10+ FCR, Str, Mana
+    Class Skills:
+      Any: 2
+    Faster Cast Rate: 10
+    Strength: 20
+    Max Mana: 80
+  - Qualities: rare # Rare Amulet >> +2 Class Skills, 6+ LL, Str, Resists
+    Class Skills:
+      Any: 2
+    Life Steal: 6
+    Strength: 20
+    Sum Resist: 30
+  - Qualities: rare # Rare Amulet >> +2 Class Skills, 8+ ML, Str, Resists
+    Class Skills:
+      Any: 2
+    Mana Steal: 8
+    Strength: 20
+    Sum Resist: 30
 
-### Paladin Shields
-Paladin Shields:
-  - Tiers: elite
-    Qualities: [normal, superior]
-    All Resist: 25
-    Sockets: [0, 4]
+#### Rings ######################################
+Ring:
+  #- Qualities: magic # Unid Magic Ring
+  - Qualities: rare # Unid Rare Ring
+  - Qualities: unique # Unid Unique Ring
+  - Qualities: magic # Magic Ring >> 40 MF
+    Magic Find: 40
+  - Qualities: magic # Magic Ring >> 10 FCR, 120 Mana
+    Faster Cast Rate: 10
+    Max Mana: 120
+  - Qualities: magic # Magic Ring >> 15 MF, 120 Mana
+    Magic Find: 15
+    Max Mana: 120
+  - Qualities: magic # Magic Ring >> 10 FCR, Resists
+    Faster Cast Rate: 10
+    Sum Resist: 30
+  - Qualities: magic # Magic Ring >> 15 MF, Resists
+    Magic Find: 15
+    Sum Resist: 30
+  - Qualities: rare # Rare Ring >> 10 FCR, 80 Mana, Resists
+    Faster Cast Rate: 10
+    Max Mana: 80
+    Sum Resist: 40
 
-### Runes
-Hel Rune:
-Pul Rune:
-Um Rune:
-Mal Rune:
-Ist Rune:
-Gul Rune:
-Vex Rune:
-Ohm Rune:
-Lo Rune:
-Sur Rune:
-Ber Rune:
-Jah Rune:
-Cham Rune:
-Zod Rune:
+#### Charms #####################################
+Small Charm:
+  - Qualities: magic # Unid Magic Small Charm
+  - Qualities: unique # Unid Annihilus
+  - Qualities: magic # Magic Small Charm >> 3 Max Dmg, 10 AR
+    Max Damage: 3
+    Attack Rating: 10
+  - Qualities: magic # Magic Small Charm >> 5 All Res
+    All Resist: 5
+  - Qualities: magic # Magic Small Charm >> 20 Life
+    Max Life: 20
+  - Qualities: magic # Magic Small Charm >> 17 Mana
+    Max Mana: 17
+  - Qualities: magic # Magic Small Charm >> 15 Life, 10 Mana
+    Max Life: 15
+    Max Mana: 10
+  - Qualities: magic # Magic Small Charm >> 7 MF
+    Magic Find: 7
+  - Qualities: magic # Magic Small Charm >> 5 FHR, 15 Life
+    Faster Hit Recovery: 5
+    Max Life: 15
+  - Qualities: magic # Magic Small Charm >> 15 Life, 3 FRW
+    Faster Run Walk: 3
+    Max Life: 15
+  - Qualities: magic # Magic Small Charm >> 15 Life, Resists
+    Max Life: 15
+    Sum Resist: 11
+  - Qualities: magic # Magic Small Charm >> 15 Life, 25 AR
+    Attack Rating: 25
+    Max Life: 15
+  - Qualities: magic # Magic Small Charm >> 5 FHR, 35 AR
+    Attack Rating: 35
+    Faster Hit Recovery: 5
+  - Qualities: magic # Magic Small Charm >> 5 Str, 34 AR
+    Attack Rating: 34
+    Strength: 5
+  - Qualities: magic # Magic Small Charm >> 5 Dex, 34 AR
+    Attack Rating: 34
+    Dexterity: 5
 
-### Gems
-Flawless Ruby:
-Flawless Sapphire:
-Flawless Emerald:
+Large Charm:
+  #- Qualities: magic # Unid Magic Large Charm
+  - Qualities: unique # Unid Torch
+  - Qualities: magic # Magic Large Charm >> 6 Max Dmg, 30 AR
+    Max Damage: 6
+    Attack Rating: 30
+  - Qualities: magic # Magic Large Charm >> 33 Life, 75 AR
+    Max Life: 33
+    Attack Rating: 75
+  - Qualities: magic # Magic Large Charm >> 25 Life, 7 All Res
+    All Resist: 7
+    Max Life: 25
+  - Qualities: magic # Magic Large Charm >> 30 Life, 30 Mana
+    Max Life: 30
+    Max Mana: 30
+
+Grand Charm:
+  - Qualities: magic # Unid Magic Grand Charm
+  - Qualities: unique # Unid Gheeds
+  - Qualities: magic # Magic Grand Charm >> 9 Max Dmg, 49 AR
+    Max Damage: 9
+    Attack Rating: 49
+  - Qualities: magic # Magic Grand Charm >> 35 Life, 100 AR
+    Max Life: 35
+    Attack Rating: 100
+  - Qualities: magic # Magic Grand Charm >> 40 Life, 35 Mana
+    Max Life: 40
+    Max Mana: 35
+  - Qualities: magic # Magic Grand Charm >> 15 All Res
+    All Resist: 15
+  - Qualities: magic # Magic Grand Charm >> 14 All Res, 7 FRW
+    All Resist: 14
+    Faster Run Walk: 7
+  - Qualities: magic # Magic Grand Charm >> 14 All Res, 12 FHR
+    All Resist: 14
+    Faster Hit Recovery: 12
+  - Qualities: magic # Magic Grand Charm >> 10 All Res, 25 Life
+    All Resist: 10
+    Max Life: 25
+  - Qualities: magic # Magic Grand Charm >> Javazon Skills
+    Class Skill Tree:
+      Amazon Javelin And Spear: 1
+  - Qualities: magic # Magic Grand Charm >> Fire Sorc Skills
+    Class Skill Tree:
+      Sorceress Fire: 1
+  - Qualities: magic # Magic Grand Charm >> Light Sorc Skills
+    Class Skill Tree:
+      Sorceress Lightning: 1
+  - Qualities: magic # Magic Grand Charm >> Cold Sorc Skills
+    Class Skill Tree:
+      Sorceress Cold: 1
+  - Qualities: magic # Magic Grand Charm >> Hammerdin Skills
+    Class Skill Tree:
+      Paladin Combat Skills: 1
+  - Qualities: magic # Magic Grand Charm >> Barb Warcries
+    Class Skill Tree:
+      Barbarian Warcries: 1
+  - Qualities: magic # Magic Grand Charm >> Wind Druid Skills
+    Class Skill Tree:
+      Druid Elemental: 1
+  - Qualities: magic # Magic Grand Charm >> Trapsin Skills
+    Class Skill Tree:
+      Assassin Traps: 1
+  - Qualities: magic # Magic Grand Charm >> Poison Boner Skills
+    Class Skill Tree:
+      Necromancer Poison And Bone: 1
+  - Qualities: magic # Magic Grand Charm >> Summoner Skills
+    Class Skill Tree:
+      Necromancer Summoning: 1
+
+#### Runes ######################################
+#El Rune: # Level 11 >> Normal >> Countess
+#Eld Rune: # Level 11 >> Normal >> Countess
+#Tir Rune: # Level 13 >> Normal >> Countess
+Nef Rune: # Level 13 >> Normal >> Countess >> Crafting: Blood Gloves
+#Ith Rune: # Level 15 >> Normal >> Countess
+#Eth Rune: # Level 15 >> Normal >> Countess
+#Tal Rune: # Level 17 >> Normal >> Countess
+Ral Rune: # Level 19 >> Normal >> Countess >> Crafting: Caster Amulet
+#Ort Rune: # Level 21 >> Nightmare >> Countess
+#Thul Rune: # Level 23 >> Nightmare >> Countess
+#Amn Rune: # Level 25 >> Nightmare >> Countess
+Sol Rune: # Level 27 >> Nightmare >> Countess
+Shael Rune: # Level 29 >> Nightmare >> Countess
+Dol Rune: # Level 31 >> Nightmare >> Countess
+Hel Rune: # Level 1 >> Nightmare >> Countess
+Io Rune: # Level 35 >> Nightmare >> Countess
+Lum Rune: # Level 37 >> Hell >> Countess
+Ko Rune: # Level 39 >> Hell >> Countess
+Fal Rune: # Level 41 >> Hell >> Countess
+Lem Rune: # Level 43 >> Hell >> Countess
+Pul Rune: # Level 45 >> Hell >> LK, Countess
+Um Rune: # Level 47 >> Hell >> LK, Countess
+Mal Rune: # Level 49 >> Hell >> LK, Countess
+Ist Rune: # Level 51 >> Hell >> LK, Countess
+Gul Rune: # Level 53 >> Hell >> LK, Countess
+Vex Rune: # Level 55 >> Hell >> LK, Andariel
+Ohm Rune: # Level 57 >> Hell >> LK, Andariel
+Lo Rune: # Level 59 >> Hell >> LK, Andariel
+Sur Rune: # Level 61 >> Hell >> LK, Duriel
+Ber Rune: # Level 63 >> Hell >> LK, Duriel
+Jah Rune: # Level 65 >> Hell >> Mephisto
+Cham Rune: # Level 67 >> Hell >> Mephisto
+Zod Rune: # Level 69 >> Hell >> Baal
+
+#### Gems #######################################
+#Flawless Ruby:
+#  - PlaySoundOnDrop: false
+#Flawless Emerald:
+#  - PlaySoundOnDrop: false
+#Flawless Sapphire:
+#  - PlaySoundOnDrop: false
+#Flawless Diamond:
+#  - PlaySoundOnDrop: false
+#Flawless Topaz:
+#  - PlaySoundOnDrop: false
+#Flawless Skull:
+#  - PlaySoundOnDrop: false
 Flawless Amethyst:
-Flawless Diamond:
-Flawless Topaz:
-Flawless Skull:
+  - PlaySoundOnDrop: false
 Perfect Ruby:
 Perfect Emerald:
 Perfect Sapphire:
@@ -290,130 +1200,26 @@ Perfect Diamond:
 Perfect Topaz:
 Perfect Skull:
 
-### Uniques
-# Dracul's Grasp
-Vampirebone Gloves:
-  - Qualities: unique
-# War Traveler
-Battle Boots:
-  - Qualities: unique
-# Sandstorm Trek
-Scarabshell Boots:
-  - Qualities: unique
-# Ribcracker
-Quarterstaff:
-  - Qualities: unique
-# Skin of the Vipermagi
-Serpentskin Armor:
-  - Qualities: unique
-# Skullder's Ire
-Russet Armor:
-  - Qualities: unique
-# Aldur's Advance
-  - Qualities: set
-# Jalal's Mane
-Totemic Mask:
-  - Qualities: unique
-# Oculus
-Swirling Crystal:
-  - Qualities: unique
-# Tal Rasha's Lidless Eye
-  - Qualities: set
-# Homunculus
-Hierophant Trophy:
-  - Qualities: unique
-# Herald of Zakarum
-Gilded Shield:
-  - Qualities: unique
-# Vampire Gaze
-Grim Helm:
-  - Qualities: unique
-# Titan's Revenge
-Ceremonial Javelin:
-  - Qualities: unique
-# Shaftstop
-Mesh Armor:
-  - Qualities: unique
-# Arachnid Mesh
-Spiderweb Sash:
-  - Qualities: unique
-# Eschuta's Temper
-Eldritch Orb:
-  - Qualities: unique
-# Arreat's Face
-Slayer Guard:
-  - Qualities: unique
-# Death's Web
-Unearthed Wand:
-  - Qualities: unique
-# Chance Guards
-Chain Gloves:
-  - Qualities: unique
-# Death's Fathom
-Dimensional Shard:
-  - Qualities: unique
-# Nightwing's Veil
-Spired Helm:
-  - Qualities: unique
-# Crown of Ages
-Corona:
-  - Qualities: unique
-# Verdungo's Hearty Cord
-Mithril Coil:
-  - Qualities: unique
-# String of Ears
-Demonhide Sash:
-  - Qualities: unique
-# Duriel's Shell
-Cuirass:
-  - Qualities: unique
-# Razortail
-Sharkskin Belt:
-  - Qualities: unique
-# Goldwrap
-Heavy Belt:
-  - Qualities: unique
-# Nosferatu's Coil
-Vampirefang Belt:
-  - Qualities: unique
-# Thundergod's Vigor
-War Belt:
-  - Qualities: unique
-# Ondal's Wisdom
-Elder Staff:
-  - Qualities: unique
-# Goblin Toe
-Light Plated Boots:
-  - Qualities: unique
-# Magefist
-Light Gauntlets:
-  - Qualities: unique
-# Gull
-Dagger:
-  - Qualities: unique
-# Wizardspike
-Bone Knife:
-  - Qualities: unique
-# Fleshripper
-Fanged Knife:
-  - Qualities: unique
-# Windforce
-Hydra Bow:
-  - Qualities: unique
-# Buriza-Do Kyanon
-Ballista:
-  - Qualities: unique
+#### Keys #######################################
+Key of Terror: # Forgotten Tower >> Countess
+Key of Hate: # Arcane Sanctuary >> Summoner
+Key of Destruction: # Halls of Vaught >> Nihlathak
 
-### Sets
-# Tal Rasha's Horadric Crest
-Death Mask:
-  - Qualities: set
-# Tal Rasha's Fine Spun Cloth
-Mesh Belt:
-  - Qualities: set
-# Guillaume's Face
-Winged Helm:
-  - Qualities: set 
-# Trang-Oul's Claws
-Heavy Bracers:
-  - Qualities: set
+#### Organs #####################################
+Diablos Horn: # Matron's Den >> Lilith
+Baals Eye: # Forgotten Sands >> Uber Duriel
+Mephistos Brain: # Furnace of Pain >> Uber Izual
+
+#### Essences ###################################
+#Twisted Essence of Suffering: # Blue >> Andarial, Duriel
+#Charged Essence of Hatred: # Yellow >> Mephisto
+Burning Essence of Terror: # Red >> Diablo
+Festering Essence of Destruction: # Green >> Baal
+Token of Absolution: # Respec Token
+
+#### Catch All ##################################
+#Any:
+  #- Qualities: [set, unique] # Unid Rare or Unique
+  - Qualities: [magic, rare] # Magic or Rare >> +1 Teleport Charges
+    Skill Charges:
+      Teleport: 1
