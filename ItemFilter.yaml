@@ -724,6 +724,14 @@ Colossus Blade:
   - Qualities: unique # The Grandfather
 
 #### Throwing ###################################
+Throwing Knifes: # TODO: Fix spelling
+  - Qualities: rare # Unid Rare Throwing Knives
+    Ethereal: true
+ 
+Throwing Axes:
+  - Qualities: rare # Unid Rare Throwing Axes
+    Ethereal: true
+
 Winged Knife:
   - Qualities: unique # Warshrike
 
@@ -750,6 +758,12 @@ Wands:
     Skills:
       Teeth: 1
       Bone Spear: 1
+
+Burnt Wand:
+  - Qualities: unique # Suicide Branch
+
+Unearthed Wand:
+  - Qualities: unique # Death's Web
 
 #### Amazon Weapons #############################
 Amazon Bows:
