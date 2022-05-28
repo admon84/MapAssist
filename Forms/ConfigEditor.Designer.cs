@@ -134,6 +134,7 @@
             this.cboRenderOption = new System.Windows.Forms.ComboBox();
             this.tabPage6 = new System.Windows.Forms.TabPage();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.cboItemLogSound = new System.Windows.Forms.ComboBox();
             this.btnClearSuperiorColor = new System.Windows.Forms.Button();
             this.btnSuperiorColor = new System.Windows.Forms.Button();
             this.btnClearUniqueColor = new System.Windows.Forms.Button();
@@ -163,10 +164,8 @@
             this.label10 = new System.Windows.Forms.Label();
             this.label17 = new System.Windows.Forms.Label();
             this.label18 = new System.Windows.Forms.Label();
-            this.txtSoundFile = new System.Windows.Forms.TextBox();
             this.cboItemLogPosition = new System.Windows.Forms.ComboBox();
             this.txtFilterFile = new System.Windows.Forms.TextBox();
-            this.label20 = new System.Windows.Forms.Label();
             this.chkItemLogItemsOnIdentify = new System.Windows.Forms.CheckBox();
             this.label21 = new System.Windows.Forms.Label();
             this.tabPage7 = new System.Windows.Forms.TabPage();
@@ -1550,6 +1549,7 @@
             // 
             this.groupBox6.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox6.Controls.Add(this.cboItemLogSound);
             this.groupBox6.Controls.Add(this.btnClearSuperiorColor);
             this.groupBox6.Controls.Add(this.btnSuperiorColor);
             this.groupBox6.Controls.Add(this.btnClearUniqueColor);
@@ -1579,10 +1579,8 @@
             this.groupBox6.Controls.Add(this.label10);
             this.groupBox6.Controls.Add(this.label17);
             this.groupBox6.Controls.Add(this.label18);
-            this.groupBox6.Controls.Add(this.txtSoundFile);
             this.groupBox6.Controls.Add(this.cboItemLogPosition);
             this.groupBox6.Controls.Add(this.txtFilterFile);
-            this.groupBox6.Controls.Add(this.label20);
             this.groupBox6.Controls.Add(this.chkItemLogItemsOnIdentify);
             this.groupBox6.Controls.Add(this.label21);
             this.groupBox6.Location = new System.Drawing.Point(11, 9);
@@ -1591,6 +1589,16 @@
             this.groupBox6.TabIndex = 0;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Item Log";
+            // 
+            // cboItemLogSound
+            // 
+            this.cboItemLogSound.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboItemLogSound.FormattingEnabled = true;
+            this.cboItemLogSound.Location = new System.Drawing.Point(256, 88);
+            this.cboItemLogSound.Name = "cboItemLogSound";
+            this.cboItemLogSound.Size = new System.Drawing.Size(121, 21);
+            this.cboItemLogSound.TabIndex = 55;
+            this.cboItemLogSound.SelectedIndexChanged += new System.EventHandler(this.soundSelect_SelectedIndexChanged);
             // 
             // btnClearSuperiorColor
             // 
@@ -1930,17 +1938,6 @@
             this.label18.TabIndex = 6;
             this.label18.Text = "Hide item after";
             // 
-            // txtSoundFile
-            // 
-            this.txtSoundFile.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtSoundFile.Location = new System.Drawing.Point(256, 88);
-            this.txtSoundFile.Name = "txtSoundFile";
-            this.txtSoundFile.Size = new System.Drawing.Size(122, 20);
-            this.txtSoundFile.TabIndex = 5;
-            this.txtSoundFile.TextChanged += new System.EventHandler(this.txtSoundFile_TextChanged);
-            this.txtSoundFile.LostFocus += new System.EventHandler(this.txtSoundFile_LostFocus);
-            // 
             // cboItemLogPosition
             // 
             this.cboItemLogPosition.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -1962,17 +1959,6 @@
             this.txtFilterFile.Size = new System.Drawing.Size(122, 20);
             this.txtFilterFile.TabIndex = 2;
             this.txtFilterFile.TextChanged += new System.EventHandler(this.txtFilterFile_TextChanged);
-            // 
-            // label20
-            // 
-            this.label20.AutoSize = true;
-            this.label20.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F);
-            this.label20.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.label20.Location = new System.Drawing.Point(255, 111);
-            this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(115, 13);
-            this.label20.TabIndex = 25;
-            this.label20.Text = "Leave blank for default";
             // 
             // chkItemLogItemsOnIdentify
             // 
@@ -2393,13 +2379,11 @@
         private System.Windows.Forms.TabPage tabPage6;
         private System.Windows.Forms.Button btnLogFont;
         private System.Windows.Forms.Label label18;
-        private System.Windows.Forms.TextBox txtSoundFile;
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.CheckBox chkPlaySound;
         private System.Windows.Forms.TextBox txtFilterFile;
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.CheckBox chkItemLogEnabled;
-        private System.Windows.Forms.Label label20;
         private System.Windows.Forms.Label label21;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label lblItemDisplayForSecondsValue;
@@ -2531,5 +2515,6 @@
         private System.Windows.Forms.CheckBox chkDebuffs;
         private System.Windows.Forms.CheckBox chkPassives;
         private System.Windows.Forms.CheckBox chkAuras;
+        private System.Windows.Forms.ComboBox cboItemLogSound;
     }
 }

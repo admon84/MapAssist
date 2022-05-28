@@ -67,7 +67,7 @@ namespace MapAssist.Types
 
             ItemLog[processId].Add(newLogEntry);
 
-            _log.Info($"Added item to log: {newLogEntry.Text}");
+            _log.Info($"Added item to log: {newLogEntry.UnitItem.MappedItemQuality} {newLogEntry.UnitItem.Item}");
         }
 
         public static bool CheckInventoryItem(UnitItem item, int processId) =>
@@ -680,6 +680,20 @@ namespace MapAssist.Types
                 }
             }
             return (0, 0, 0);
+        }
+
+        public static Item? ParseFromString(string text)
+        {
+            if (Enum.TryParse("Class" + text.Replace(" ", "").Replace("-", ""), true, out Item itemClass))
+            {
+                return itemClass;
+            }
+            else if (Enum.TryParse(text.Replace(" ", "").Replace("-", ""), true, out Item item))
+            {
+                return item;
+            }
+
+            return null;
         }
 
         public static readonly Dictionary<uint, string> _SetFromId = new Dictionary<uint, string>()

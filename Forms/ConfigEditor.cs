@@ -2,6 +2,7 @@
 using MapAssist.Settings;
 using MapAssist.Types;
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -12,11 +13,14 @@ namespace MapAssist
 {
     public partial class ConfigEditor : Form
     {
+        private bool formReady = false;
+
         private PropertyInfo SelectedProperty;
         private AddAreaForm areaForm;
 
         public ConfigEditor()
         {
+            formReady = false;
             InitializeComponent();
 
             var propertyList = MapAssistConfiguration.Loaded.MapConfiguration.GetType().GetProperties();
@@ -125,7 +129,6 @@ namespace MapAssist
             chkShowDirectionToItem.Checked = MapAssistConfiguration.Loaded.ItemLog.ShowDirectionToItem;
             chkPlaySound.Checked = MapAssistConfiguration.Loaded.ItemLog.PlaySoundOnDrop;
             txtFilterFile.Text = MapAssistConfiguration.Loaded.ItemLog.FilterFileName;
-            txtSoundFile.Text = MapAssistConfiguration.Loaded.ItemLog.SoundFile;
             soundVolume.Value = (int)Math.Round(MapAssistConfiguration.Loaded.ItemLog.SoundVolume / 5d);
             lblSoundVolumeValue.Text = $"{soundVolume.Value * 5}";
             itemDisplayForSeconds.Value = (int)Math.Round(MapAssistConfiguration.Loaded.ItemLog.DisplayForSeconds / 5d);
@@ -193,6 +196,16 @@ namespace MapAssist
             }
 
             chkDPIAware.Checked = MapAssistConfiguration.Loaded.DPIAware;
+
+            var filePaths = Directory.GetFiles(System.IO.Path.Combine(Application.StartupPath, "Sounds"), @"*.wav");
+            foreach (var filePath in filePaths)
+            {
+                var fileName = System.IO.Path.GetFileName(filePath);
+                cboItemLogSound.Items.Add(fileName);
+            }
+            cboItemLogSound.Text = MapAssistConfiguration.Loaded.ItemLog.SoundFile;
+
+            formReady = true;
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)
@@ -741,19 +754,16 @@ namespace MapAssist
             MapAssistConfiguration.Loaded.ItemLog.FilterFileName = txtFilterFile.Text;
         }
 
+        private void soundSelect_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            MapAssistConfiguration.Loaded.ItemLog.SoundFile = cboItemLogSound.SelectedItem.ToString();
+            AudioPlayer.LoadNewSound(true);
+            if (formReady) AudioPlayer.PlayItemAlert(true);
+        }
+
         private void chkPlaySound_CheckedChanged(object sender, EventArgs e)
         {
             MapAssistConfiguration.Loaded.ItemLog.PlaySoundOnDrop = chkPlaySound.Checked;
-        }
-
-        private void txtSoundFile_TextChanged(object sender, EventArgs e)
-        {
-            MapAssistConfiguration.Loaded.ItemLog.SoundFile = txtSoundFile.Text;
-        }
-
-        private void txtSoundFile_LostFocus(object sender, EventArgs e)
-        {
-            AudioPlayer.LoadNewSound(true);
         }
 
         private void soundVolume_Scroll(object sender, EventArgs e)
