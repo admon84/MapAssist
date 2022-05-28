@@ -129,6 +129,8 @@ Shields:
     Ethereal: false
 
 Monarch:
+  - Qualities: magic # Unid Magic Monarch
+    Min Area Level: 67
   - Qualities: [normal, superior] # Runeword Base >> Phoenix, Spirit
     Sockets: [0, 4]
   - Qualities: magic # Jeweler's Monarch >> 4os, 17 FHR
@@ -141,6 +143,8 @@ Monarch:
     Faster Block Rate: 30
 
 Ward:
+  - Qualities: magic # Unid Magic Ward
+    Min Area Level: 67
   - Qualities: magic # Jeweler's Ward >> 4os, 30 FBR
     Ethereal: false
     Sockets: [4]
@@ -677,6 +681,7 @@ Giant Sword:
 
 Phase Blade:
   - Qualities: [magic, rare] # Unid Magic/Rare Phase
+    Min Area Level: 67
   - Qualities: [magic, rare] # Magic/Rare Phase >> 4os
     Sockets: [4]
   - Qualities: [normal, superior] # Runeword Base >> Oath, Grief, Destruction Last Wish, Unbending Will
@@ -782,13 +787,15 @@ Matriarchal Spear:
 
 #### Assassin Katars ############################
 Assassin Katars:
-  - Tiers: [exceptional, elite] # Unid Rare Claw
-    Qualities: rare
+  - Tiers: [exceptional, elite] # Unid Magic/Rare Claws
+    Qualities: [magic, rare]
+    Min Area Level: 67
+    Min Quality Level: 45
     Ethereal: false
-  - Qualities: [magic, rare] # Magic/Rare Claw >> +4 Traps Claw
+  - Qualities: [magic, rare] # Magic/Rare Claw >> +4 Traps Claws
     Class Skill Tree:
       Assassin Traps: 4
-  - Qualities: [magic, rare] # Magic/Rare Claw >> +4 LS Claw
+  - Qualities: [magic, rare] # Magic/Rare Claw >> +4 LS Claws
     Skills:
       Lightning Sentry: 4
   - Qualities: [normal, superior] # Runeword Base >> Chaos, Fury
@@ -834,8 +841,8 @@ Swirling Crystal:
 
 #### Circlets ###################################
 Circlets:
-  - Qualities: magic # Unid Magic Circlet
-  - Qualities: rare # Unid Rare Circlet
+  - Qualities: [magic, rare] # Unid Magic/Rare Circlet
+    Min Area Level: 67
   - Qualities: superior # Runeword Base >> Dream
     Sockets: [3]
     Ethereal: false
@@ -1232,8 +1239,12 @@ Festering Essence of Destruction: # Green >> Baal
 Token of Absolution: # Respec Token
 
 #### Catch All ##################################
-#Any:
+Any:
   #- Qualities: [set, unique] # Unid Rare or Unique
   - Qualities: [magic, rare] # Magic or Rare >> +1 Teleport Charges
     Skill Charges:
       Teleport: 1
+  - Qualities: superior # Information >> 15 ED
+    Enhanced Damage: 15
+  - Qualities: superior # Information >> 15 ED
+    Enhanced Defense: 15
