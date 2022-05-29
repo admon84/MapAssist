@@ -131,6 +131,7 @@ Shields:
 Monarch:
   - Qualities: magic # Unid Magic Monarch
     Min Area Level: 67
+    PlaySoundOnDrop: false
   - Qualities: [normal, superior] # Runeword Base >> Phoenix, Spirit
     Sockets: [0, 4]
   - Qualities: magic # Jeweler's Monarch >> 4os, 17 FHR
@@ -145,6 +146,7 @@ Monarch:
 Ward:
   - Qualities: magic # Unid Magic Ward
     Min Area Level: 67
+    PlaySoundOnDrop: false
   - Qualities: magic # Jeweler's Ward >> 4os, 30 FBR
     Ethereal: false
     Sockets: [4]
@@ -682,6 +684,7 @@ Giant Sword:
 Phase Blade:
   - Qualities: [magic, rare] # Unid Magic/Rare Phase
     Min Area Level: 67
+    PlaySoundOnDrop: false
   - Qualities: [magic, rare] # Magic/Rare Phase >> 4os
     Sockets: [4]
   - Qualities: [normal, superior] # Runeword Base >> Oath, Grief, Destruction Last Wish, Unbending Will
@@ -792,6 +795,7 @@ Assassin Katars:
     Min Area Level: 67
     Min Quality Level: 45
     Ethereal: false
+    PlaySoundOnDrop: false
   - Qualities: [magic, rare] # Magic/Rare Claw >> +4 Traps Claws
     Class Skill Tree:
       Assassin Traps: 4
@@ -843,6 +847,7 @@ Swirling Crystal:
 Circlets:
   - Qualities: [magic, rare] # Unid Magic/Rare Circlet
     Min Area Level: 67
+    PlaySoundOnDrop: false
   - Qualities: superior # Runeword Base >> Dream
     Sockets: [3]
     Ethereal: false
@@ -1237,14 +1242,3 @@ Mephistos Brain: # Furnace of Pain >> Uber Izual
 Burning Essence of Terror: # Red >> Diablo
 Festering Essence of Destruction: # Green >> Baal
 Token of Absolution: # Respec Token
-
-#### Catch All ##################################
-Any:
-  #- Qualities: [set, unique] # Unid Rare or Unique
-  - Qualities: [magic, rare] # Magic or Rare >> +1 Teleport Charges
-    Skill Charges:
-      Teleport: 1
-  - Qualities: superior # Information >> 15 ED
-    Enhanced Damage: 15
-  - Qualities: superior # Information >> 15 ED
-    Enhanced Defense: 15
