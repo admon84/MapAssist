@@ -151,55 +151,58 @@ namespace MapAssist
 
         public void KeyDownHandler(object sender, KeyEventArgs args)
         {
-            if (InGame() && GameManager.IsGameInForeground && !_gameData.MenuOpen.Chat)
+            if (GameManager.IsGameInForeground && (_gameData == null || !_gameData.MenuOpen.Chat))
             {
                 var keys = new Hotkey(args.Modifiers, args.KeyCode);
 
-                if (keys == new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.ToggleKey))
+                if (InGame())
                 {
-                    _show = !_show;
-                }
-
-                if (keys == new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.HideMapKey))
-                {
-                    _show = false;
-                }
-
-                if (keys == new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.MapPositionsKey))
-                {
-                    var position = MapAssistConfiguration.Loaded.RenderingConfiguration.Position;
-                    MapAssistConfiguration.Loaded.RenderingConfiguration.Position = Enum.GetValues(typeof(MapPosition))
-                        .Cast<MapPosition>().Concat(new[] { default(MapPosition) })
-                        .SkipWhile(e => !position.Equals(e)).Skip(1).First();
-                }
-
-                if (keys == new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.ZoomInKey))
-                {
-                    var zoomLevel = MapAssistConfiguration.Loaded.RenderingConfiguration.ZoomLevel;
-
-                    if (MapAssistConfiguration.Loaded.RenderingConfiguration.ZoomLevel > 0.1f)
+                    if (keys == new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.ToggleKey))
                     {
-                        MapAssistConfiguration.Loaded.RenderingConfiguration.ZoomLevel -= zoomLevel <= 1 ? 0.1 : 0.2;
-                        MapAssistConfiguration.Loaded.RenderingConfiguration.Size +=
-                          (int)(MapAssistConfiguration.Loaded.RenderingConfiguration.InitialSize * 0.05f);
+                        _show = !_show;
                     }
-                }
 
-                if (keys == new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.ZoomOutKey))
-                {
-                    var zoomLevel = MapAssistConfiguration.Loaded.RenderingConfiguration.ZoomLevel;
-
-                    if (MapAssistConfiguration.Loaded.RenderingConfiguration.ZoomLevel < 4f)
+                    if (keys == new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.HideMapKey))
                     {
-                        MapAssistConfiguration.Loaded.RenderingConfiguration.ZoomLevel += zoomLevel >= 1 ? 0.2 : 0.1;
-                        MapAssistConfiguration.Loaded.RenderingConfiguration.Size -=
-                          (int)(MapAssistConfiguration.Loaded.RenderingConfiguration.InitialSize * 0.05f);
+                        _show = false;
                     }
-                }
 
-                if (keys == new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.ExportItemsKey))
-                {
-                    ItemExport.ExportPlayerInventory(_gameData.PlayerUnit, _gameData.AllItems);
+                    if (keys == new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.MapPositionsKey))
+                    {
+                        var position = MapAssistConfiguration.Loaded.RenderingConfiguration.Position;
+                        MapAssistConfiguration.Loaded.RenderingConfiguration.Position = Enum.GetValues(typeof(MapPosition))
+                            .Cast<MapPosition>().Concat(new[] { default(MapPosition) })
+                            .SkipWhile(e => !position.Equals(e)).Skip(1).First();
+                    }
+
+                    if (keys == new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.ZoomInKey))
+                    {
+                        var zoomLevel = MapAssistConfiguration.Loaded.RenderingConfiguration.ZoomLevel;
+
+                        if (MapAssistConfiguration.Loaded.RenderingConfiguration.ZoomLevel > 0.1f)
+                        {
+                            MapAssistConfiguration.Loaded.RenderingConfiguration.ZoomLevel -= zoomLevel <= 1 ? 0.1 : 0.2;
+                            MapAssistConfiguration.Loaded.RenderingConfiguration.Size +=
+                              (int)(MapAssistConfiguration.Loaded.RenderingConfiguration.InitialSize * 0.05f);
+                        }
+                    }
+
+                    if (keys == new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.ZoomOutKey))
+                    {
+                        var zoomLevel = MapAssistConfiguration.Loaded.RenderingConfiguration.ZoomLevel;
+
+                        if (MapAssistConfiguration.Loaded.RenderingConfiguration.ZoomLevel < 4f)
+                        {
+                            MapAssistConfiguration.Loaded.RenderingConfiguration.ZoomLevel += zoomLevel >= 1 ? 0.2 : 0.1;
+                            MapAssistConfiguration.Loaded.RenderingConfiguration.Size -=
+                              (int)(MapAssistConfiguration.Loaded.RenderingConfiguration.InitialSize * 0.05f);
+                        }
+                    }
+
+                    if (keys == new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.ExportItemsKey))
+                    {
+                        ItemExport.ExportPlayerInventory(_gameData.PlayerUnit, _gameData.AllItems);
+                    }
                 }
 
                 if (keys == new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.ShowConfigKey))
