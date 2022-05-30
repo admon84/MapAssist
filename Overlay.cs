@@ -202,9 +202,16 @@ namespace MapAssist
                     ItemExport.ExportPlayerInventory(_gameData.PlayerUnit, _gameData.AllItems);
                 }
 
-                if (keys == new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.ShowConfigKey) && !_configEditor.Visible)
+                if (keys == new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.ShowConfigKey))
                 {
-                    _configEditor.ShowDialog();
+                    if (_configEditor.Visible)
+                    {
+                        _configEditor.Close();
+                    }
+                    else
+                    {
+                        _configEditor.ShowDialog();
+                    }
                 }
             }
         }
