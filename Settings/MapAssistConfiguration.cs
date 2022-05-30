@@ -281,8 +281,8 @@ public class HotkeyConfiguration
     [YamlMember(Alias = "HideMapKey", ApplyNamingConventions = false)]
     public string HideMapKey { get; set; }
 
-    [YamlMember(Alias = "AreaLevelKey", ApplyNamingConventions = false)]
-    public string AreaLevelKey { get; set; }
+    [YamlMember(Alias = "MapPositionsKey", ApplyNamingConventions = false)]
+    public string MapPositionsKey { get; set; }
 
     [YamlMember(Alias = "ZoomInKey", ApplyNamingConventions = false)]
     public string ZoomInKey { get; set; }
@@ -292,6 +292,9 @@ public class HotkeyConfiguration
 
     [YamlMember(Alias = "ExportItemsKey", ApplyNamingConventions = false)]
     public string ExportItemsKey { get; set; }
+
+    [YamlMember(Alias = "ShowConfigKey", ApplyNamingConventions = false)]
+    public string ShowConfigKey { get; set; }
 }
 
 public class GameInfoConfiguration

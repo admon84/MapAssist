@@ -5,6 +5,7 @@ using MapAssist.Settings;
 using MapAssist.Structs;
 using MapAssist.Types;
 using System;
+using System.Linq;
 using System.Windows.Forms;
 using Graphics = GameOverlay.Drawing.Graphics;
 
@@ -18,13 +19,15 @@ namespace MapAssist
         private GameDataReader _gameDataReader;
         private GameData _gameData;
         private Compositor _compositor = new Compositor();
+        private static ConfigEditor _configEditor;
         private (MapPosition, bool) _lastMapConfiguration;
         private bool _show = true;
         private static readonly object _lock = new object();
         private bool frameDone = true;
 
-        public Overlay()
+        public Overlay(ConfigEditor configEditor)
         {
+            _configEditor = configEditor;
             _gameDataReader = new GameDataReader();
 
             GameOverlay.TimerService.EnableHighPrecisionTimers();
@@ -162,9 +165,12 @@ namespace MapAssist
                     _show = false;
                 }
 
-                if (keys == new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.AreaLevelKey))
+                if (keys == new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.MapPositionsKey))
                 {
-                    MapAssistConfiguration.Loaded.GameInfo.ShowAreaLevel = !MapAssistConfiguration.Loaded.GameInfo.ShowAreaLevel;
+                    var position = MapAssistConfiguration.Loaded.RenderingConfiguration.Position;
+                    MapAssistConfiguration.Loaded.RenderingConfiguration.Position = Enum.GetValues(typeof(MapPosition))
+                        .Cast<MapPosition>().Concat(new[] { default(MapPosition) })
+                        .SkipWhile(e => !position.Equals(e)).Skip(1).First();
                 }
 
                 if (keys == new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.ZoomInKey))
@@ -193,10 +199,12 @@ namespace MapAssist
 
                 if (keys == new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.ExportItemsKey))
                 {
-                    if (InGame())
-                    {
-                        ItemExport.ExportPlayerInventory(_gameData.PlayerUnit, _gameData.AllItems);
-                    }
+                    ItemExport.ExportPlayerInventory(_gameData.PlayerUnit, _gameData.AllItems);
+                }
+
+                if (keys == new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.ShowConfigKey) && !_configEditor.Visible)
+                {
+                    _configEditor.ShowDialog();
                 }
             }
         }

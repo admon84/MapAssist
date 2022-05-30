@@ -116,10 +116,11 @@ namespace MapAssist
 
             new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.ToggleKey.ToString()).Monitor(txtToggleMapKey);
             new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.HideMapKey.ToString()).Monitor(txtHideMapKey);
-            new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.AreaLevelKey.ToString()).Monitor(txtAreaLevelKey);
+            new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.MapPositionsKey.ToString()).Monitor(txtMapPositionsKey);
             new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.ZoomInKey.ToString()).Monitor(txtZoomInKey);
             new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.ZoomOutKey.ToString()).Monitor(txtZoomOutKey);
             new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.ExportItemsKey.ToString()).Monitor(txtExportItemsKey);
+            new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.ShowConfigKey.ToString()).Monitor(txtShowConfigKey);
 
             cboItemLogPosition.SelectedIndex = cboItemLogPosition.FindStringExact(MapAssistConfiguration.Loaded.ItemLog.Position.ToString().ToProperCase());
             chkItemLogEnabled.Checked = MapAssistConfiguration.Loaded.ItemLog.Enabled;
@@ -971,9 +972,9 @@ namespace MapAssist
             MapAssistConfiguration.Loaded.HotkeyConfiguration.HideMapKey = txtHideMapKey.Text;
         }
 
-        private void txtAreaLevelKey_TextChanged(object sender, EventArgs e)
+        private void txtMapPositionsKey_TextChanged(object sender, EventArgs e)
         {
-            MapAssistConfiguration.Loaded.HotkeyConfiguration.AreaLevelKey = txtAreaLevelKey.Text;
+            MapAssistConfiguration.Loaded.HotkeyConfiguration.MapPositionsKey = txtMapPositionsKey.Text;
         }
 
         private void txtZoomInKey_TextChanged(object sender, EventArgs e)
@@ -989,6 +990,11 @@ namespace MapAssist
         private void txtExportItemsKey_TextChanged(object sender, EventArgs e)
         {
             MapAssistConfiguration.Loaded.HotkeyConfiguration.ExportItemsKey = txtExportItemsKey.Text;
+        }
+
+        private void txtShowConfigKey_TextChanged(object sender, EventArgs e)
+        {
+            MapAssistConfiguration.Loaded.HotkeyConfiguration.ShowConfigKey = txtShowConfigKey.Text;
         }
 
         private void btnWalkableColor_Click(object sender, EventArgs e)

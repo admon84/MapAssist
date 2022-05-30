@@ -53,6 +53,8 @@
             this.chkShowGameName = new System.Windows.Forms.CheckBox();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.btnClearExpRangeColor = new System.Windows.Forms.Button();
+            this.btnExpRangeColor = new System.Windows.Forms.Button();
             this.chkMonsterHealthBar = new System.Windows.Forms.CheckBox();
             this.btnClearBorderColor = new System.Windows.Forms.Button();
             this.btnClearWalkableColor = new System.Windows.Forms.Button();
@@ -170,11 +172,13 @@
             this.label21 = new System.Windows.Forms.Label();
             this.tabPage7 = new System.Windows.Forms.TabPage();
             this.grpHotkeys = new System.Windows.Forms.GroupBox();
+            this.txtShowConfigKey = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.txtHideMapKey = new System.Windows.Forms.TextBox();
             this.lblHideMapKey = new System.Windows.Forms.Label();
             this.txtZoomOutKey = new System.Windows.Forms.TextBox();
             this.txtZoomInKey = new System.Windows.Forms.TextBox();
-            this.txtAreaLevelKey = new System.Windows.Forms.TextBox();
+            this.txtMapPositionsKey = new System.Windows.Forms.TextBox();
             this.txtToggleMapKey = new System.Windows.Forms.TextBox();
             this.txtExportItemsKey = new System.Windows.Forms.TextBox();
             this.label15 = new System.Windows.Forms.Label();
@@ -196,8 +200,6 @@
             this.label3 = new System.Windows.Forms.Label();
             this.chkDPIAware = new System.Windows.Forms.CheckBox();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
-            this.btnClearExpRangeColor = new System.Windows.Forms.Button();
-            this.btnExpRangeColor = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage5.SuspendLayout();
             this.groupBox5.SuspendLayout();
@@ -563,6 +565,30 @@
             this.groupBox1.TabIndex = 21;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Rendering";
+            // 
+            // btnClearExpRangeColor
+            // 
+            this.btnClearExpRangeColor.FlatAppearance.BorderSize = 0;
+            this.btnClearExpRangeColor.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnClearExpRangeColor.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F);
+            this.btnClearExpRangeColor.Location = new System.Drawing.Point(360, 273);
+            this.btnClearExpRangeColor.Name = "btnClearExpRangeColor";
+            this.btnClearExpRangeColor.Size = new System.Drawing.Size(23, 23);
+            this.btnClearExpRangeColor.TabIndex = 27;
+            this.btnClearExpRangeColor.Text = "X";
+            this.btnClearExpRangeColor.UseVisualStyleBackColor = true;
+            this.btnClearExpRangeColor.Click += new System.EventHandler(this.btnClearExpRangeColor_Click);
+            // 
+            // btnExpRangeColor
+            // 
+            this.btnExpRangeColor.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnExpRangeColor.Location = new System.Drawing.Point(262, 273);
+            this.btnExpRangeColor.Name = "btnExpRangeColor";
+            this.btnExpRangeColor.Size = new System.Drawing.Size(97, 23);
+            this.btnExpRangeColor.TabIndex = 28;
+            this.btnExpRangeColor.Text = "Exp Range Color";
+            this.btnExpRangeColor.UseVisualStyleBackColor = true;
+            this.btnExpRangeColor.Click += new System.EventHandler(this.btnExpRangeColor_Click);
             // 
             // chkMonsterHealthBar
             // 
@@ -2001,11 +2027,13 @@
             // 
             this.grpHotkeys.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.grpHotkeys.Controls.Add(this.txtShowConfigKey);
+            this.grpHotkeys.Controls.Add(this.label4);
             this.grpHotkeys.Controls.Add(this.txtHideMapKey);
             this.grpHotkeys.Controls.Add(this.lblHideMapKey);
             this.grpHotkeys.Controls.Add(this.txtZoomOutKey);
             this.grpHotkeys.Controls.Add(this.txtZoomInKey);
-            this.grpHotkeys.Controls.Add(this.txtAreaLevelKey);
+            this.grpHotkeys.Controls.Add(this.txtMapPositionsKey);
             this.grpHotkeys.Controls.Add(this.txtToggleMapKey);
             this.grpHotkeys.Controls.Add(this.txtExportItemsKey);
             this.grpHotkeys.Controls.Add(this.label15);
@@ -2019,6 +2047,25 @@
             this.grpHotkeys.TabIndex = 9;
             this.grpHotkeys.TabStop = false;
             this.grpHotkeys.Text = "Hotkeys";
+            // 
+            // txtShowConfigKey
+            // 
+            this.txtShowConfigKey.Location = new System.Drawing.Point(160, 180);
+            this.txtShowConfigKey.MaxLength = 1;
+            this.txtShowConfigKey.Name = "txtShowConfigKey";
+            this.txtShowConfigKey.Size = new System.Drawing.Size(94, 20);
+            this.txtShowConfigKey.TabIndex = 20;
+            this.txtShowConfigKey.TabStop = false;
+            this.txtShowConfigKey.TextChanged += new System.EventHandler(this.txtShowConfigKey_TextChanged);
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(6, 183);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(130, 13);
+            this.label4.TabIndex = 21;
+            this.label4.Text = "Show Config Window Key";
             // 
             // txtHideMapKey
             // 
@@ -2059,15 +2106,15 @@
             this.txtZoomInKey.TabStop = false;
             this.txtZoomInKey.TextChanged += new System.EventHandler(this.txtZoomInKey_TextChanged);
             // 
-            // txtAreaLevelKey
+            // txtMapPositionsKey
             // 
-            this.txtAreaLevelKey.Location = new System.Drawing.Point(160, 73);
-            this.txtAreaLevelKey.MaxLength = 1;
-            this.txtAreaLevelKey.Name = "txtAreaLevelKey";
-            this.txtAreaLevelKey.Size = new System.Drawing.Size(94, 20);
-            this.txtAreaLevelKey.TabIndex = 13;
-            this.txtAreaLevelKey.TabStop = false;
-            this.txtAreaLevelKey.TextChanged += new System.EventHandler(this.txtAreaLevelKey_TextChanged);
+            this.txtMapPositionsKey.Location = new System.Drawing.Point(160, 73);
+            this.txtMapPositionsKey.MaxLength = 1;
+            this.txtMapPositionsKey.Name = "txtMapPositionsKey";
+            this.txtMapPositionsKey.Size = new System.Drawing.Size(94, 20);
+            this.txtMapPositionsKey.TabIndex = 13;
+            this.txtMapPositionsKey.TabStop = false;
+            this.txtMapPositionsKey.TextChanged += new System.EventHandler(this.txtMapPositionsKey_TextChanged);
             // 
             // txtToggleMapKey
             // 
@@ -2112,9 +2159,9 @@
             this.label13.AutoSize = true;
             this.label13.Location = new System.Drawing.Point(6, 76);
             this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(115, 13);
+            this.label13.Size = new System.Drawing.Size(123, 13);
             this.label13.TabIndex = 9;
-            this.label13.Text = "Toggle Area Level Key";
+            this.label13.Text = "Cycle Map Positions Key";
             // 
             // label12
             // 
@@ -2284,30 +2331,6 @@
             this.chkDPIAware.UseVisualStyleBackColor = true;
             this.chkDPIAware.CheckedChanged += new System.EventHandler(this.chkDPIAware_CheckedChanged);
             // 
-            // btnClearExpRangeColor
-            // 
-            this.btnClearExpRangeColor.FlatAppearance.BorderSize = 0;
-            this.btnClearExpRangeColor.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnClearExpRangeColor.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F);
-            this.btnClearExpRangeColor.Location = new System.Drawing.Point(360, 273);
-            this.btnClearExpRangeColor.Name = "btnClearExpRangeColor";
-            this.btnClearExpRangeColor.Size = new System.Drawing.Size(23, 23);
-            this.btnClearExpRangeColor.TabIndex = 27;
-            this.btnClearExpRangeColor.Text = "X";
-            this.btnClearExpRangeColor.UseVisualStyleBackColor = true;
-            this.btnClearExpRangeColor.Click += new System.EventHandler(this.btnClearExpRangeColor_Click);
-            // 
-            // btnExpRangeColor
-            // 
-            this.btnExpRangeColor.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnExpRangeColor.Location = new System.Drawing.Point(262, 273);
-            this.btnExpRangeColor.Name = "btnExpRangeColor";
-            this.btnExpRangeColor.Size = new System.Drawing.Size(97, 23);
-            this.btnExpRangeColor.TabIndex = 28;
-            this.btnExpRangeColor.Text = "Exp Range Color";
-            this.btnExpRangeColor.UseVisualStyleBackColor = true;
-            this.btnExpRangeColor.Click += new System.EventHandler(this.btnExpRangeColor_Click);
-            // 
             // ConfigEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -2316,11 +2339,13 @@
             this.Controls.Add(this.tabControl1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.KeyPreview = true;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "ConfigEditor";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Configuration - MapAssist";
+            this.TopMost = true;
             this.tabControl1.ResumeLayout(false);
             this.tabPage5.ResumeLayout(false);
             this.groupBox5.ResumeLayout(false);
@@ -2498,7 +2523,7 @@
         private System.Windows.Forms.GroupBox grpHotkeys;
         private System.Windows.Forms.TextBox txtZoomOutKey;
         private System.Windows.Forms.TextBox txtZoomInKey;
-        private System.Windows.Forms.TextBox txtAreaLevelKey;
+        private System.Windows.Forms.TextBox txtMapPositionsKey;
         private System.Windows.Forms.TextBox txtToggleMapKey;
         private System.Windows.Forms.TextBox txtExportItemsKey;
         private System.Windows.Forms.Label label15;
@@ -2546,5 +2571,7 @@
         private System.Windows.Forms.ComboBox cboItemLogSound;
         private System.Windows.Forms.Button btnClearExpRangeColor;
         private System.Windows.Forms.Button btnExpRangeColor;
+        private System.Windows.Forms.TextBox txtShowConfigKey;
+        private System.Windows.Forms.Label label4;
     }
 }
