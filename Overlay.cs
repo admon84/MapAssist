@@ -79,16 +79,18 @@ namespace MapAssist
                                 gfx.Height == 1;
 
                             var size = MapAssistConfiguration.Loaded.RenderingConfiguration.Size;
+                            var height = MapAssistConfiguration.Loaded.RenderingConfiguration.OverlayMode ? size / 2 : size;
 
                             var drawBounds = new Rectangle(0, 0, gfx.Width, gfx.Height * 0.78f);
                             switch (MapAssistConfiguration.Loaded.RenderingConfiguration.Position)
                             {
                                 case MapPosition.TopLeft:
-                                    drawBounds = new Rectangle(PlayerIconWidth() + 40, PlayerIconWidth() + 100, 0, PlayerIconWidth() + 100 + size);
+                                    drawBounds = new Rectangle(PlayerIconWidth() + 40, PlayerIconWidth() + 100, 0, PlayerIconWidth() + 100 + height);
                                     break;
 
                                 case MapPosition.TopRight:
-                                    drawBounds = new Rectangle(0, 100, gfx.Width, 100 + size);
+                                    var drawWidth = MapAssistConfiguration.Loaded.RenderingConfiguration.OverlayMode ? gfx.Width : gfx.Width - GameInfoRightMargin();
+                                    drawBounds = new Rectangle(0, PlayerIconWidth() + 100, drawWidth, PlayerIconWidth() + 100 + height);
                                     break;
                             }
 
@@ -113,7 +115,7 @@ namespace MapAssist
 
                             var itemLogAnchor = (MapAssistConfiguration.Loaded.ItemLog.Position == MapAssistConfiguration.Loaded.GameInfo.Position)
                                 ? nextAnchor.Add(0, GameInfoPadding())
-                                : GameInfoAnchor(MapAssistConfiguration.Loaded.ItemLog.Position);
+                                : gameInfoAnchor;
                             _compositor.DrawItemLog(gfx, itemLogAnchor);
                         }
                     }
@@ -231,6 +233,11 @@ namespace MapAssist
             return rect.Height / 100f;
         }
 
+        private float GameInfoRightMargin()
+        {
+            return _window.Width / 60f;
+        }
+
         private Point GameInfoAnchor(GameInfoPosition position)
         {
             switch (position)
@@ -240,9 +247,8 @@ namespace MapAssist
                     return new Point(PlayerIconWidth() + margin, PlayerIconWidth() + margin);
 
                 case GameInfoPosition.TopRight:
-                    var rightMargin = _window.Width / 60f;
                     var topMargin = _window.Height / 35f;
-                    return new Point(_window.Width - rightMargin, topMargin);
+                    return new Point(_window.Width - GameInfoRightMargin(), topMargin);
             }
             return new Point();
         }

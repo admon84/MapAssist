@@ -68,7 +68,10 @@ namespace MapAssist.Helpers
 
             if (_areaData == null) return;
 
-            var renderWidth = MapAssistConfiguration.Loaded.RenderingConfiguration.Size * _areaData.ViewOutputRect.Width / _areaData.ViewOutputRect.Height;
+            var renderWidth = MapAssistConfiguration.Loaded.RenderingConfiguration.OverlayMode
+                ? MapAssistConfiguration.Loaded.RenderingConfiguration.Size
+                : scaleWidth * _areaData.ViewOutputRect.Width;
+
             switch (MapAssistConfiguration.Loaded.RenderingConfiguration.Position)
             {
                 case MapPosition.TopLeft:
@@ -95,7 +98,11 @@ namespace MapAssist.Helpers
 
             RenderTarget renderTarget = gfx.GetRenderTarget();
 
-            var areasToRender = (new AreaData[] { _areaData }).Concat(_areaData.AdjacentAreas.Values).ToArray();
+            var areasToRender = new AreaData[] { _areaData };
+            if (AreaExtensions.RequiresStitching(_areaData.Area))
+            {
+                areasToRender = areasToRender.Concat(_areaData.AdjacentAreas.Values.Where(area => AreaExtensions.RequiresStitching(area.Area))).ToArray();
+            }
 
             foreach (var renderArea in areasToRender)
             {
@@ -1592,21 +1599,34 @@ namespace MapAssist.Helpers
 
         private (float, float) GetScaleRatios()
         {
-            var zoomLevel = (float)MapAssistConfiguration.Loaded.RenderingConfiguration.ZoomLevel;
-            var multiplier = 4.5f * (float)Math.Pow(zoomLevel > 1 ? 2 : 4, -zoomLevel + 1); // Hitting +/- should make the map bigger/smaller, respectively, like in overlay = false mode
-
-            if (!MapAssistConfiguration.Loaded.RenderingConfiguration.OverlayMode)
+            var multiplier = 1f;
+            if (MapAssistConfiguration.Loaded.RenderingConfiguration.OverlayMode)
             {
-                multiplier = MapAssistConfiguration.Loaded.RenderingConfiguration.Size / _areaData.ViewOutputRect.Height;
+                var zoomLevel = (float)MapAssistConfiguration.Loaded.RenderingConfiguration.ZoomLevel;
+                multiplier = 4.5f * (float)Math.Pow(zoomLevel > 1 ? 2 : 4, -zoomLevel + 1); // Hitting +/- should make the map bigger/smaller, respectively, like in overlay = false mode
+                
+                if (MapAssistConfiguration.Loaded.RenderingConfiguration.Position != MapPosition.Center)
+                {
+                    multiplier *= 0.5f;
+                }
+            }
+            else
+            {
+                var maxUpscale = 2;
+                var scaleAreaWidth = _areaData.ViewOutputRect.Width * maxUpscale;
+                if (scaleAreaWidth < MapAssistConfiguration.Loaded.RenderingConfiguration.Size)
+                {
+                    multiplier = scaleAreaWidth / _areaData.ViewOutputRect.Height / maxUpscale * (MapAssistConfiguration.Loaded.RenderingConfiguration.Size / scaleAreaWidth);
+                }
+                else
+                {
+                    multiplier = Math.Min(MapAssistConfiguration.Loaded.RenderingConfiguration.Size, _areaData.ViewOutputRect.Width) / _areaData.ViewOutputRect.Height;
+                }
 
                 if (multiplier == 0)
                 {
                     multiplier = 1;
                 }
-            }
-            else if (MapAssistConfiguration.Loaded.RenderingConfiguration.Position != MapPosition.Center)
-            {
-                multiplier *= 0.5f;
             }
 
             if (multiplier != 1 || MapAssistConfiguration.Loaded.RenderingConfiguration.OverlayMode)
@@ -1616,10 +1636,7 @@ namespace MapAssist.Helpers
 
                 return (multiplier * widthShrink, multiplier * heightShrink);
             }
-            else
-            {
-                return (multiplier, multiplier);
-            }
+            return (multiplier, multiplier);
         }
 
         private void CalcTransformMatrices(Graphics gfx)
@@ -1641,7 +1658,7 @@ namespace MapAssist.Helpers
                 else
                 {
                     mapTransformMatrix *= Matrix3x2.CreateTranslation(new Vector2(_drawBounds.Left, _drawBounds.Top))
-                        * Matrix3x2.CreateTranslation(new Vector2(_drawBounds.Width / 2, _drawBounds.Height / 2));
+                        * Matrix3x2.CreateTranslation(new Vector2(_drawBounds.Width / 2.12f, _drawBounds.Height / 2.42f));
                 }
             }
             else

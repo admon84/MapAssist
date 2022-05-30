@@ -823,7 +823,7 @@ namespace MapAssist.Types
 
         public static bool RequiresStitching(this Area area)
         {
-            return StitchedAreas.Contains(area);
+            return MapAssistConfiguration.Loaded.RenderingConfiguration.OverlayMode && StitchedAreas.Contains(area);
         }
         public static bool IsTown(this Area area)
         {
