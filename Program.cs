@@ -131,6 +131,7 @@ namespace MapAssist
                     }
                 };
 
+                configEditor = new ConfigEditor();
                 backWorkOverlay.DoWork += new DoWorkEventHandler(RunOverlay);
                 backWorkOverlay.WorkerSupportsCancellation = true;
                 backWorkOverlay.RunWorkerAsync();
@@ -185,11 +186,6 @@ namespace MapAssist
 
         public static void RunOverlay(object sender, DoWorkEventArgs e)
         {
-            if (configEditor == null)
-            {
-                configEditor = new ConfigEditor();
-            }
-
             using (overlay = new Overlay(configEditor))
             {
                 overlay.Run();
@@ -266,11 +262,6 @@ namespace MapAssist
 
         private static void ShowConfigEditor(object sender, EventArgs e)
         {
-            if (configEditor == null)
-            {
-                configEditor = new ConfigEditor();
-            }
-
             if (configEditor.Visible)
             {
                 configEditor.Activate();
