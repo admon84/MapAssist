@@ -2,10 +2,11 @@
 HotkeyConfiguration:
   ToggleKey: '|'
   HideMapKey: ''
-  AreaLevelKey: '['
+  MapPositionsKey: '['
   ZoomInKey: Num +
   ZoomOutKey: Num -
   ExportItemsKey: F9
+  ShowConfigKey: F12
 HiddenAreas:
 - Forgotten Tower
 AuthorizedWindowTitles: []

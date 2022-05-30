@@ -106,13 +106,14 @@ namespace MapAssist
                 var exitMenuItem = new ToolStripMenuItem("Exit", null, TrayExit);
                 contextMenu.Items.Add(exitMenuItem);
 
-                contextMenu.Items.AddRange(new ToolStripItem[] {
-                        configMenuItem,
-                        lootFilterMenuItem,
-                        new ToolStripSeparator(),
-                        restartMenuItem,
-                        exitMenuItem
-                    });
+                contextMenu.Items.AddRange(new ToolStripItem[]
+                {
+                    configMenuItem,
+                    lootFilterMenuItem,
+                    new ToolStripSeparator(),
+                    restartMenuItem,
+                    exitMenuItem
+                });
 
                 trayIcon = new NotifyIcon()
                 {
@@ -184,7 +185,12 @@ namespace MapAssist
 
         public static void RunOverlay(object sender, DoWorkEventArgs e)
         {
-            using (overlay = new Overlay())
+            if (configEditor == null)
+            {
+                configEditor = new ConfigEditor();
+            }
+
+            using (overlay = new Overlay(configEditor))
             {
                 overlay.Run();
             }
