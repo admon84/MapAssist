@@ -293,8 +293,8 @@ public class HotkeyConfiguration
     [YamlMember(Alias = "ExportItemsKey", ApplyNamingConventions = false)]
     public string ExportItemsKey { get; set; }
 
-    [YamlMember(Alias = "ShowConfigKey", ApplyNamingConventions = false)]
-    public string ShowConfigKey { get; set; }
+    [YamlMember(Alias = "ToggleConfigKey", ApplyNamingConventions = false)]
+    public string ToggleConfigKey { get; set; }
 }
 
 public class GameInfoConfiguration

@@ -172,7 +172,7 @@
             this.label21 = new System.Windows.Forms.Label();
             this.tabPage7 = new System.Windows.Forms.TabPage();
             this.grpHotkeys = new System.Windows.Forms.GroupBox();
-            this.txtShowConfigKey = new System.Windows.Forms.TextBox();
+            this.txtToggleConfigKey = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.txtHideMapKey = new System.Windows.Forms.TextBox();
             this.lblHideMapKey = new System.Windows.Forms.Label();
@@ -2027,7 +2027,7 @@
             // 
             this.grpHotkeys.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.grpHotkeys.Controls.Add(this.txtShowConfigKey);
+            this.grpHotkeys.Controls.Add(this.txtToggleConfigKey);
             this.grpHotkeys.Controls.Add(this.label4);
             this.grpHotkeys.Controls.Add(this.txtHideMapKey);
             this.grpHotkeys.Controls.Add(this.lblHideMapKey);
@@ -2048,15 +2048,15 @@
             this.grpHotkeys.TabStop = false;
             this.grpHotkeys.Text = "Hotkeys";
             // 
-            // txtShowConfigKey
+            // txtToggleConfigKey
             // 
-            this.txtShowConfigKey.Location = new System.Drawing.Point(160, 180);
-            this.txtShowConfigKey.MaxLength = 1;
-            this.txtShowConfigKey.Name = "txtShowConfigKey";
-            this.txtShowConfigKey.Size = new System.Drawing.Size(94, 20);
-            this.txtShowConfigKey.TabIndex = 20;
-            this.txtShowConfigKey.TabStop = false;
-            this.txtShowConfigKey.TextChanged += new System.EventHandler(this.txtShowConfigKey_TextChanged);
+            this.txtToggleConfigKey.Location = new System.Drawing.Point(160, 180);
+            this.txtToggleConfigKey.MaxLength = 1;
+            this.txtToggleConfigKey.Name = "txtToggleConfigKey";
+            this.txtToggleConfigKey.Size = new System.Drawing.Size(94, 20);
+            this.txtToggleConfigKey.TabIndex = 20;
+            this.txtToggleConfigKey.TabStop = false;
+            this.txtToggleConfigKey.TextChanged += new System.EventHandler(this.txtToggleConfigKey_TextChanged);
             // 
             // label4
             // 
@@ -2065,7 +2065,7 @@
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(130, 13);
             this.label4.TabIndex = 21;
-            this.label4.Text = "Show Config Window Key";
+            this.label4.Text = "Toggle Config Window Key";
             // 
             // txtHideMapKey
             // 
@@ -2571,7 +2571,7 @@
         private System.Windows.Forms.ComboBox cboItemLogSound;
         private System.Windows.Forms.Button btnClearExpRangeColor;
         private System.Windows.Forms.Button btnExpRangeColor;
-        private System.Windows.Forms.TextBox txtShowConfigKey;
+        private System.Windows.Forms.TextBox txtToggleConfigKey;
         private System.Windows.Forms.Label label4;
     }
 }
