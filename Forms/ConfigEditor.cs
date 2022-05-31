@@ -7,6 +7,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace MapAssist
@@ -14,6 +15,7 @@ namespace MapAssist
     public partial class ConfigEditor : Form
     {
         private bool formReady = false;
+        private bool formShown = false;
 
         private PropertyInfo SelectedProperty;
         private AddAreaForm areaForm;
@@ -221,9 +223,42 @@ namespace MapAssist
             formReady = true;
         }
 
+        private void ConfigEditor_Shown(object sender, EventArgs e)
+        {
+            Activate();
+
+            Task.Run(() =>
+            {
+                Task.Delay(500).Wait(); // Allow a timeout if holding down the hotkey for too long
+                formShown = true;
+            });
+        }
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            var keys = new Hotkey(Keys.None, keyData);
+
+            if (keyData == Keys.Escape)
+            {
+                Close();
+                return true;
+            }
+            else if (keys == new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.ShowConfigKey))
+            {
+                if (!formShown) return false;
+
+                Close();
+                return true;
+            }
+
+            // Call the base class
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             MapAssistConfiguration.Loaded.Save();
+            formShown = false;
             base.OnFormClosing(e);
         }
 

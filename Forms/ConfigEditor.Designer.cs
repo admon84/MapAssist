@@ -2345,6 +2345,7 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Configuration - MapAssist";
             this.TopMost = true;
+            this.Shown += new System.EventHandler(this.ConfigEditor_Shown);
             this.tabControl1.ResumeLayout(false);
             this.tabPage5.ResumeLayout(false);
             this.groupBox5.ResumeLayout(false);
