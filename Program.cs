@@ -194,7 +194,6 @@ namespace MapAssist
 
         private static void ProcessException(Exception e)
         {
-
             var message = e.Message + Environment.NewLine + Environment.NewLine + e.StackTrace;
 
             if (e.GetType() == typeof(YamlException) && e.InnerException != null)
