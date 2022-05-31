@@ -5,6 +5,7 @@ using MapAssist.Settings;
 using MapAssist.Structs;
 using MapAssist.Types;
 using System;
+using System.Linq;
 using System.Windows.Forms;
 using Graphics = GameOverlay.Drawing.Graphics;
 
@@ -18,12 +19,15 @@ namespace MapAssist
         private GameDataReader _gameDataReader;
         private GameData _gameData;
         private Compositor _compositor = new Compositor();
+        private static ConfigEditor _configEditor;
+        private (MapPosition, bool) _lastMapConfiguration;
         private bool _show = true;
         private static readonly object _lock = new object();
         private bool frameDone = true;
 
-        public Overlay()
+        public Overlay(ConfigEditor configEditor)
         {
+            _configEditor = configEditor;
             _gameDataReader = new GameDataReader();
 
             GameOverlay.TimerService.EnableHighPrecisionTimers();
@@ -51,12 +55,18 @@ namespace MapAssist
             {
                 lock (_lock)
                 {
+                    (MapPosition, bool) MapConfiguration()
+                    {
+                        return (MapAssistConfiguration.Loaded.RenderingConfiguration.Position, MapAssistConfiguration.Loaded.RenderingConfiguration.OverlayMode);
+                    }
+
                     var (gameData, areaData, changed) = _gameDataReader.Get();
                     _gameData = gameData;
 
-                    if (changed)
+                    if (changed || _lastMapConfiguration != MapConfiguration())
                     {
                         _compositor.SetArea(areaData);
+                        _lastMapConfiguration = MapConfiguration();
                     }
 
                     gfx.ClearScene();
@@ -79,16 +89,17 @@ namespace MapAssist
                                 gfx.Height == 1;
 
                             var size = MapAssistConfiguration.Loaded.RenderingConfiguration.Size;
+                            var height = MapAssistConfiguration.Loaded.RenderingConfiguration.OverlayMode ? size / 2 : size;
 
                             var drawBounds = new Rectangle(0, 0, gfx.Width, gfx.Height * 0.78f);
                             switch (MapAssistConfiguration.Loaded.RenderingConfiguration.Position)
                             {
                                 case MapPosition.TopLeft:
-                                    drawBounds = new Rectangle(PlayerIconWidth() + 40, PlayerIconWidth() + 100, 0, PlayerIconWidth() + 100 + size);
+                                    drawBounds = new Rectangle(PlayerIconWidth() + 40, PlayerIconWidth() + 60, 0, PlayerIconWidth() + 60 + height); // Right will be reset inside compositor
                                     break;
 
                                 case MapPosition.TopRight:
-                                    drawBounds = new Rectangle(0, 100, gfx.Width, 100 + size);
+                                    drawBounds = new Rectangle(0, PlayerIconWidth() + 60, gfx.Width, PlayerIconWidth() + 60 + height); // Left will be reset inside compositor
                                     break;
                             }
 
@@ -140,54 +151,69 @@ namespace MapAssist
 
         public void KeyDownHandler(object sender, KeyEventArgs args)
         {
-            if (InGame() && GameManager.IsGameInForeground && !_gameData.MenuOpen.Chat)
+            if (GameManager.IsGameInForeground && (_gameData == null || !_gameData.MenuOpen.Chat))
             {
                 var keys = new Hotkey(args.Modifiers, args.KeyCode);
 
-                if (keys == new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.ToggleKey))
+                if (InGame())
                 {
-                    _show = !_show;
-                }
-
-                if (keys == new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.HideMapKey))
-                {
-                    _show = false;
-                }
-
-                if (keys == new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.AreaLevelKey))
-                {
-                    MapAssistConfiguration.Loaded.GameInfo.ShowAreaLevel = !MapAssistConfiguration.Loaded.GameInfo.ShowAreaLevel;
-                }
-
-                if (keys == new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.ZoomInKey))
-                {
-                    var zoomLevel = MapAssistConfiguration.Loaded.RenderingConfiguration.ZoomLevel;
-
-                    if (MapAssistConfiguration.Loaded.RenderingConfiguration.ZoomLevel > 0.1f)
+                    if (keys == new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.ToggleKey))
                     {
-                        MapAssistConfiguration.Loaded.RenderingConfiguration.ZoomLevel -= zoomLevel <= 1 ? 0.1 : 0.2;
-                        MapAssistConfiguration.Loaded.RenderingConfiguration.Size +=
-                          (int)(MapAssistConfiguration.Loaded.RenderingConfiguration.InitialSize * 0.05f);
+                        _show = !_show;
                     }
-                }
 
-                if (keys == new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.ZoomOutKey))
-                {
-                    var zoomLevel = MapAssistConfiguration.Loaded.RenderingConfiguration.ZoomLevel;
-
-                    if (MapAssistConfiguration.Loaded.RenderingConfiguration.ZoomLevel < 4f)
+                    if (keys == new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.HideMapKey))
                     {
-                        MapAssistConfiguration.Loaded.RenderingConfiguration.ZoomLevel += zoomLevel >= 1 ? 0.2 : 0.1;
-                        MapAssistConfiguration.Loaded.RenderingConfiguration.Size -=
-                          (int)(MapAssistConfiguration.Loaded.RenderingConfiguration.InitialSize * 0.05f);
+                        _show = false;
                     }
-                }
 
-                if (keys == new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.ExportItemsKey))
-                {
-                    if (InGame())
+                    if (keys == new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.MapPositionsKey))
+                    {
+                        var position = MapAssistConfiguration.Loaded.RenderingConfiguration.Position;
+                        MapAssistConfiguration.Loaded.RenderingConfiguration.Position = Enum.GetValues(typeof(MapPosition))
+                            .Cast<MapPosition>().Concat(new[] { default(MapPosition) })
+                            .SkipWhile(e => !position.Equals(e)).Skip(1).First();
+                    }
+
+                    if (keys == new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.ZoomInKey))
+                    {
+                        var zoomLevel = MapAssistConfiguration.Loaded.RenderingConfiguration.ZoomLevel;
+
+                        if (MapAssistConfiguration.Loaded.RenderingConfiguration.ZoomLevel > 0.1f)
+                        {
+                            MapAssistConfiguration.Loaded.RenderingConfiguration.ZoomLevel -= zoomLevel <= 1 ? 0.1 : 0.2;
+                            MapAssistConfiguration.Loaded.RenderingConfiguration.Size +=
+                              (int)(MapAssistConfiguration.Loaded.RenderingConfiguration.InitialSize * 0.05f);
+                        }
+                    }
+
+                    if (keys == new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.ZoomOutKey))
+                    {
+                        var zoomLevel = MapAssistConfiguration.Loaded.RenderingConfiguration.ZoomLevel;
+
+                        if (MapAssistConfiguration.Loaded.RenderingConfiguration.ZoomLevel < 4f)
+                        {
+                            MapAssistConfiguration.Loaded.RenderingConfiguration.ZoomLevel += zoomLevel >= 1 ? 0.2 : 0.1;
+                            MapAssistConfiguration.Loaded.RenderingConfiguration.Size -=
+                              (int)(MapAssistConfiguration.Loaded.RenderingConfiguration.InitialSize * 0.05f);
+                        }
+                    }
+
+                    if (keys == new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.ExportItemsKey))
                     {
                         ItemExport.ExportPlayerInventory(_gameData.PlayerUnit, _gameData.AllItems);
+                    }
+                }
+
+                if (keys == new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.ToggleConfigKey))
+                {
+                    if (_configEditor.Visible)
+                    {
+                        _configEditor.Close();
+                    }
+                    else
+                    {
+                        _configEditor.ShowDialog();
                     }
                 }
             }

@@ -106,13 +106,14 @@ namespace MapAssist
                 var exitMenuItem = new ToolStripMenuItem("Exit", null, TrayExit);
                 contextMenu.Items.Add(exitMenuItem);
 
-                contextMenu.Items.AddRange(new ToolStripItem[] {
-                        configMenuItem,
-                        lootFilterMenuItem,
-                        new ToolStripSeparator(),
-                        restartMenuItem,
-                        exitMenuItem
-                    });
+                contextMenu.Items.AddRange(new ToolStripItem[]
+                {
+                    configMenuItem,
+                    lootFilterMenuItem,
+                    new ToolStripSeparator(),
+                    restartMenuItem,
+                    exitMenuItem
+                });
 
                 trayIcon = new NotifyIcon()
                 {
@@ -130,6 +131,7 @@ namespace MapAssist
                     }
                 };
 
+                configEditor = new ConfigEditor();
                 backWorkOverlay.DoWork += new DoWorkEventHandler(RunOverlay);
                 backWorkOverlay.WorkerSupportsCancellation = true;
                 backWorkOverlay.RunWorkerAsync();
@@ -184,7 +186,7 @@ namespace MapAssist
 
         public static void RunOverlay(object sender, DoWorkEventArgs e)
         {
-            using (overlay = new Overlay())
+            using (overlay = new Overlay(configEditor))
             {
                 overlay.Run();
             }
@@ -192,16 +194,18 @@ namespace MapAssist
 
         private static void ProcessException(Exception e)
         {
-            _log.Fatal(e);
-
             var message = e.Message + Environment.NewLine + Environment.NewLine + e.StackTrace;
 
             if (e.GetType() == typeof(YamlException) && e.InnerException != null)
             {
+                _log.Fatal(e.InnerException);
+
                 message = e.Message + Environment.NewLine + Environment.NewLine +
                     e.InnerException.Message + Environment.NewLine + Environment.NewLine +
                     e.InnerException.StackTrace;
             }
+
+            _log.Fatal(e);
 
             MessageBox.Show(message, $"{messageBoxTitle}: Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -257,11 +261,6 @@ namespace MapAssist
 
         private static void ShowConfigEditor(object sender, EventArgs e)
         {
-            if (configEditor == null)
-            {
-                configEditor = new ConfigEditor();
-            }
-
             if (configEditor.Visible)
             {
                 configEditor.Activate();
@@ -281,6 +280,9 @@ namespace MapAssist
         private static void Dispose()
         {
             _log.Info("Disposing");
+
+            AudioPlayer.Dispose();
+            _log.Info("Disposed sound files");
 
             overlay.Dispose();
             _log.Info("Disposed Overlay");

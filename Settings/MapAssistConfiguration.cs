@@ -67,6 +67,9 @@ namespace MapAssist.Settings
 
         [YamlMember(Alias = "Border", ApplyNamingConventions = false)]
         public Color? Border { get; set; }
+
+        [YamlMember(Alias = "ExpRange", ApplyNamingConventions = false)]
+        public Color? ExpRange { get; set; }
     }
 
     public class MapConfiguration
@@ -278,8 +281,8 @@ public class HotkeyConfiguration
     [YamlMember(Alias = "HideMapKey", ApplyNamingConventions = false)]
     public string HideMapKey { get; set; }
 
-    [YamlMember(Alias = "AreaLevelKey", ApplyNamingConventions = false)]
-    public string AreaLevelKey { get; set; }
+    [YamlMember(Alias = "MapPositionsKey", ApplyNamingConventions = false)]
+    public string MapPositionsKey { get; set; }
 
     [YamlMember(Alias = "ZoomInKey", ApplyNamingConventions = false)]
     public string ZoomInKey { get; set; }
@@ -289,6 +292,9 @@ public class HotkeyConfiguration
 
     [YamlMember(Alias = "ExportItemsKey", ApplyNamingConventions = false)]
     public string ExportItemsKey { get; set; }
+
+    [YamlMember(Alias = "ToggleConfigKey", ApplyNamingConventions = false)]
+    public string ToggleConfigKey { get; set; }
 }
 
 public class GameInfoConfiguration

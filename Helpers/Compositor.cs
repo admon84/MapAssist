@@ -68,7 +68,10 @@ namespace MapAssist.Helpers
 
             if (_areaData == null) return;
 
-            var renderWidth = MapAssistConfiguration.Loaded.RenderingConfiguration.Size * _areaData.ViewOutputRect.Width / _areaData.ViewOutputRect.Height;
+            var renderWidth = MapAssistConfiguration.Loaded.RenderingConfiguration.OverlayMode
+                ? MapAssistConfiguration.Loaded.RenderingConfiguration.Size
+                : scaleWidth * _areaData.ViewOutputRect.Width;
+
             switch (MapAssistConfiguration.Loaded.RenderingConfiguration.Position)
             {
                 case MapPosition.TopLeft:
@@ -95,7 +98,11 @@ namespace MapAssist.Helpers
 
             RenderTarget renderTarget = gfx.GetRenderTarget();
 
-            var areasToRender = (new AreaData[] { _areaData }).Concat(_areaData.AdjacentAreas.Values).ToArray();
+            var areasToRender = new AreaData[] { _areaData };
+            if (AreaExtensions.RequiresStitching(_areaData.Area))
+            {
+                areasToRender = areasToRender.Concat(_areaData.AdjacentAreas.Values.Where(area => AreaExtensions.RequiresStitching(area.Area))).ToArray();
+            }
 
             foreach (var renderArea in areasToRender)
             {
@@ -181,6 +188,7 @@ namespace MapAssist.Helpers
 
             renderTarget.Transform = areaTransformMatrix.ToDXMatrix();
 
+            DrawExpRange(gfx);
             DrawPointsOfInterest(gfx);
             DrawMonsters(gfx);
             DrawMissiles(gfx);
@@ -188,6 +196,31 @@ namespace MapAssist.Helpers
             DrawPlayers(gfx);
 
             renderTarget.PopAxisAlignedClip();
+        }
+
+        private void DrawExpRange(Graphics gfx)
+        {
+            var color = MapAssistConfiguration.Loaded.MapColorConfiguration.ExpRange;
+
+            if (color != null && !_areaData.Area.IsTown())
+            {
+                var distance = 60;
+                var snap = 40;
+                var offset = -20;
+
+                var offsetX = offset - (_areaData.Origin.X % snap);
+                var offsetY = offset - (_areaData.Origin.Y % snap);
+
+                var opacity = (float)MapAssistConfiguration.Loaded.RenderingConfiguration.IconOpacity;
+                var brush = CreateSolidBrush(gfx, (Color)color, opacity);
+
+                var center = _gameData.PlayerUnit.Position;
+                center.X = (float)Math.Round((center.X + offsetX) / snap) * snap - offsetX;
+                center.Y = (float)Math.Round((center.Y + offsetY) / snap) * snap - offsetY;
+
+                var rect = new Rectangle(center.X - distance, center.Y - distance, center.X + distance, center.Y + distance);
+                gfx.DrawRectangle(brush, rect, 0.5f);
+            }
         }
 
         private void DrawPointsOfInterest(Graphics gfx)
@@ -1036,8 +1069,7 @@ namespace MapAssist.Helpers
                 {
                     position = position.Subtract(stringSize.X, 0);
                 }
-
-                if (MapAssistConfiguration.Loaded.ItemLog.ShowDirectionToItem)
+                else if (MapAssistConfiguration.Loaded.ItemLog.ShowDirectionToItem)
                 {
                     position = position.Add(stringSize.Y, 0);
                 }
@@ -1280,6 +1312,12 @@ namespace MapAssist.Helpers
                             gfx.DrawGeometry(geo, outlineBrush, rendering.IconThickness);
                         }
 
+                        if (rendering.IconShape == Shape.Pentagram && (rendering.IconColor.A > 0 || rendering.IconOutlineColor.A > 0))
+                        {
+                            var brush = rendering.IconOutlineColor.A > 0 ? outlineBrush : fillBrush;
+                            gfx.DrawEllipse(brush, position, rendering.IconSize * scaleWidth / 2 + rendering.IconThickness, rendering.IconSize * _scaleHeight / 2 + rendering.IconThickness, rendering.IconThickness); // Divide by 2 because the parameter requires a radius
+                        }
+
                         break;
                 }
             }
@@ -1482,6 +1520,36 @@ namespace MapAssist.Helpers
                         new Point(0.50f, 1),
                         new Point(0.85f, 0.35f)
                     }.Select(point => point.Multiply(render.IconSize).Subtract(render.IconSize / 2f).Multiply(scaleWidth, scaleWidth)).ToArray();
+
+                case Shape.Stick:
+                    return new Point[]
+                    {
+                        new Point(0.42f, 0),
+                        new Point(0.58f, 0),
+                        new Point(0.50f, 0.65f),
+                    }.Select(point => point.Multiply(render.IconSize).Subtract(render.IconSize / 2f).Multiply(scaleWidth, scaleWidth)).ToArray();
+
+                case Shape.Leg:
+                    return new Point[]
+                    {
+                        new Point(0.2f, 0.6f),
+                        new Point(0.4f, 0f),
+                        new Point(0.50f, 0),
+                        new Point(0.35f, 0.40f),
+                        new Point(0.4f, 0.40f),
+                        new Point(0.50f, 0.50f),
+                    }.Select(point => point.Multiply(render.IconSize).Subtract(render.IconSize / 2f).Multiply(scaleWidth, scaleWidth)).ToArray();
+
+                case Shape.Pentagram:
+                    return new Point[]
+                    {
+                        new Point(0.50f, 1f),
+                        new Point(0.22f, 0.1f),
+                        new Point(0.96f, 0.66f),
+                        new Point(0.04f, 0.66f),
+                        new Point(0.78f, 0.1f),
+                        new Point(0.50f, 1f),
+                    }.Select(point => point.Multiply(render.IconSize).Subtract(render.IconSize / 2).Multiply(scaleWidth, _scaleHeight)).ToArray();
             }
 
             return new Point[]
@@ -1546,21 +1614,34 @@ namespace MapAssist.Helpers
 
         private (float, float) GetScaleRatios()
         {
-            var zoomLevel = (float)MapAssistConfiguration.Loaded.RenderingConfiguration.ZoomLevel;
-            var multiplier = 4.5f * (float)Math.Pow(zoomLevel > 1 ? 2 : 4, -zoomLevel + 1); // Hitting +/- should make the map bigger/smaller, respectively, like in overlay = false mode
-
-            if (!MapAssistConfiguration.Loaded.RenderingConfiguration.OverlayMode)
+            var multiplier = 1f;
+            if (MapAssistConfiguration.Loaded.RenderingConfiguration.OverlayMode)
             {
-                multiplier = MapAssistConfiguration.Loaded.RenderingConfiguration.Size / _areaData.ViewOutputRect.Height;
+                var zoomLevel = (float)MapAssistConfiguration.Loaded.RenderingConfiguration.ZoomLevel;
+                multiplier = 4.5f * (float)Math.Pow(zoomLevel > 1 ? 2 : 4, -zoomLevel + 1); // Hitting +/- should make the map bigger/smaller, respectively, like in overlay = false mode
+
+                if (MapAssistConfiguration.Loaded.RenderingConfiguration.Position != MapPosition.Center)
+                {
+                    multiplier *= 0.5f;
+                }
+            }
+            else
+            {
+                var maxUpscale = 2;
+                var scaleAreaWidth = _areaData.ViewOutputRect.Width * maxUpscale;
+                if (scaleAreaWidth < MapAssistConfiguration.Loaded.RenderingConfiguration.Size)
+                {
+                    multiplier = scaleAreaWidth / _areaData.ViewOutputRect.Height / maxUpscale * (MapAssistConfiguration.Loaded.RenderingConfiguration.Size / scaleAreaWidth);
+                }
+                else
+                {
+                    multiplier = Math.Min(MapAssistConfiguration.Loaded.RenderingConfiguration.Size, _areaData.ViewOutputRect.Width) / _areaData.ViewOutputRect.Height;
+                }
 
                 if (multiplier == 0)
                 {
                     multiplier = 1;
                 }
-            }
-            else if (MapAssistConfiguration.Loaded.RenderingConfiguration.Position != MapPosition.Center)
-            {
-                multiplier *= 0.5f;
             }
 
             if (multiplier != 1 || MapAssistConfiguration.Loaded.RenderingConfiguration.OverlayMode)
@@ -1570,10 +1651,7 @@ namespace MapAssist.Helpers
 
                 return (multiplier * widthShrink, multiplier * heightShrink);
             }
-            else
-            {
-                return (multiplier, multiplier);
-            }
+            return (multiplier, multiplier);
         }
 
         private void CalcTransformMatrices(Graphics gfx)
@@ -1595,7 +1673,7 @@ namespace MapAssist.Helpers
                 else
                 {
                     mapTransformMatrix *= Matrix3x2.CreateTranslation(new Vector2(_drawBounds.Left, _drawBounds.Top))
-                        * Matrix3x2.CreateTranslation(new Vector2(_drawBounds.Width / 2, _drawBounds.Height / 2));
+                        * Matrix3x2.CreateTranslation(new Vector2(_drawBounds.Width / 2.12f, _drawBounds.Height / 2.42f));
                 }
             }
             else

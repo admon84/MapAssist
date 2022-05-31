@@ -2,11 +2,13 @@
 using MapAssist.Settings;
 using MapAssist.Types;
 using System;
-using System.IO;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace MapAssist
@@ -14,6 +16,8 @@ namespace MapAssist
     public partial class ConfigEditor : Form
     {
         private bool formReady = false;
+        private bool formShown = false;
+        private CancellationTokenSource formShownCancelToken;
 
         private PropertyInfo SelectedProperty;
         private AddAreaForm areaForm;
@@ -116,10 +120,11 @@ namespace MapAssist
 
             new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.ToggleKey.ToString()).Monitor(txtToggleMapKey);
             new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.HideMapKey.ToString()).Monitor(txtHideMapKey);
-            new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.AreaLevelKey.ToString()).Monitor(txtAreaLevelKey);
+            new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.MapPositionsKey.ToString()).Monitor(txtMapPositionsKey);
             new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.ZoomInKey.ToString()).Monitor(txtZoomInKey);
             new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.ZoomOutKey.ToString()).Monitor(txtZoomOutKey);
             new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.ExportItemsKey.ToString()).Monitor(txtExportItemsKey);
+            new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.ToggleConfigKey.ToString()).Monitor(txtToggleConfigKey);
 
             cboItemLogPosition.SelectedIndex = cboItemLogPosition.FindStringExact(MapAssistConfiguration.Loaded.ItemLog.Position.ToString().ToProperCase());
             chkItemLogEnabled.Checked = MapAssistConfiguration.Loaded.ItemLog.Enabled;
@@ -185,6 +190,18 @@ namespace MapAssist
                 btnClearBorderColor.Visible = false;
             }
 
+            if (MapAssistConfiguration.Loaded.MapColorConfiguration.ExpRange != null)
+            {
+                var color = (Color)MapAssistConfiguration.Loaded.MapColorConfiguration.ExpRange;
+                btnExpRangeColor.BackColor = color;
+                btnExpRangeColor.ForeColor = ContrastTextColor(color);
+                btnClearExpRangeColor.Visible = color.A > 0;
+            }
+            else
+            {
+                btnClearExpRangeColor.Visible = false;
+            }
+
             foreach (var area in MapAssistConfiguration.Loaded.HiddenAreas)
             {
                 lstHidden.Items.Add(AreaExtensions.Name(area));
@@ -208,9 +225,45 @@ namespace MapAssist
             formReady = true;
         }
 
+        private void ConfigEditor_Shown(object sender, EventArgs e)
+        {
+            Activate();
+
+            formShownCancelToken = new CancellationTokenSource();
+            Task.Run(() =>
+            {
+                Task.Delay(500).Wait(); // Allow a timeout if holding down the hotkey for too long
+                if (!formShownCancelToken.IsCancellationRequested) formShown = true;
+            }, formShownCancelToken.Token);
+        }
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            var keys = new Hotkey(Keys.None, keyData);
+
+            if (keyData == Keys.Escape)
+            {
+                formShownCancelToken.Cancel();
+                Close();
+                return true;
+            }
+            else if (keys == new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.ToggleConfigKey))
+            {
+                if (!formShown) return false;
+
+                formShownCancelToken.Cancel();
+                Close();
+                return true;
+            }
+
+            // Call the base class
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             MapAssistConfiguration.Loaded.Save();
+            formShown = false;
             base.OnFormClosing(e);
         }
 
@@ -757,8 +810,7 @@ namespace MapAssist
         private void soundSelect_SelectedIndexChanged(object sender, EventArgs e)
         {
             MapAssistConfiguration.Loaded.ItemLog.SoundFile = cboItemLogSound.SelectedItem.ToString();
-            AudioPlayer.LoadNewSound(true);
-            if (formReady) AudioPlayer.PlayItemAlert(true);
+            if (formReady) AudioPlayer.PlayItemAlert(MapAssistConfiguration.Loaded.ItemLog.SoundFile, stopPreviousAlert: true);
         }
 
         private void chkPlaySound_CheckedChanged(object sender, EventArgs e)
@@ -960,9 +1012,9 @@ namespace MapAssist
             MapAssistConfiguration.Loaded.HotkeyConfiguration.HideMapKey = txtHideMapKey.Text;
         }
 
-        private void txtAreaLevelKey_TextChanged(object sender, EventArgs e)
+        private void txtMapPositionsKey_TextChanged(object sender, EventArgs e)
         {
-            MapAssistConfiguration.Loaded.HotkeyConfiguration.AreaLevelKey = txtAreaLevelKey.Text;
+            MapAssistConfiguration.Loaded.HotkeyConfiguration.MapPositionsKey = txtMapPositionsKey.Text;
         }
 
         private void txtZoomInKey_TextChanged(object sender, EventArgs e)
@@ -978,6 +1030,11 @@ namespace MapAssist
         private void txtExportItemsKey_TextChanged(object sender, EventArgs e)
         {
             MapAssistConfiguration.Loaded.HotkeyConfiguration.ExportItemsKey = txtExportItemsKey.Text;
+        }
+
+        private void txtToggleConfigKey_TextChanged(object sender, EventArgs e)
+        {
+            MapAssistConfiguration.Loaded.HotkeyConfiguration.ToggleConfigKey = txtToggleConfigKey.Text;
         }
 
         private void btnWalkableColor_Click(object sender, EventArgs e)
@@ -1022,6 +1079,28 @@ namespace MapAssist
             btnBorderColor.ForeColor = ContrastTextColor(btnBorderColor.BackColor);
 
             btnClearBorderColor.Visible = false;
+        }
+
+        private void btnExpRangeColor_Click(object sender, EventArgs e)
+        {
+            var (colorDlg, colorResult) = SelectColor();
+            if (colorResult == DialogResult.OK)
+            {
+                MapAssistConfiguration.Loaded.MapColorConfiguration.ExpRange = colorDlg.Color;
+                btnExpRangeColor.BackColor = colorDlg.Color;
+                btnExpRangeColor.ForeColor = ContrastTextColor(btnExpRangeColor.BackColor);
+
+                btnClearExpRangeColor.Visible = true;
+            }
+        }
+
+        private void btnClearExpRangeColor_Click(object sender, EventArgs e)
+        {
+            MapAssistConfiguration.Loaded.MapColorConfiguration.ExpRange = null;
+            btnExpRangeColor.BackColor = Color.Empty;
+            btnExpRangeColor.ForeColor = ContrastTextColor(btnExpRangeColor.BackColor);
+
+            btnClearExpRangeColor.Visible = false;
         }
 
         private void btnAddHidden_Click(object sender, EventArgs e)
@@ -1112,6 +1191,7 @@ namespace MapAssist
         }
 
         private List<Color> customColors = new List<Color>();
+
         private (ColorDialog, DialogResult) SelectColor()
         {
             var colorDlg = new ColorDialog();
