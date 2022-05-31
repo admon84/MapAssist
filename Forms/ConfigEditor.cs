@@ -122,7 +122,7 @@ namespace MapAssist
             new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.ZoomInKey.ToString()).Monitor(txtZoomInKey);
             new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.ZoomOutKey.ToString()).Monitor(txtZoomOutKey);
             new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.ExportItemsKey.ToString()).Monitor(txtExportItemsKey);
-            new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.ShowConfigKey.ToString()).Monitor(txtShowConfigKey);
+            new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.ToggleConfigKey.ToString()).Monitor(txtToggleConfigKey);
 
             cboItemLogPosition.SelectedIndex = cboItemLogPosition.FindStringExact(MapAssistConfiguration.Loaded.ItemLog.Position.ToString().ToProperCase());
             chkItemLogEnabled.Checked = MapAssistConfiguration.Loaded.ItemLog.Enabled;
@@ -243,7 +243,7 @@ namespace MapAssist
                 Close();
                 return true;
             }
-            else if (keys == new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.ShowConfigKey))
+            else if (keys == new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.ToggleConfigKey))
             {
                 if (!formShown) return false;
 
@@ -1027,9 +1027,9 @@ namespace MapAssist
             MapAssistConfiguration.Loaded.HotkeyConfiguration.ExportItemsKey = txtExportItemsKey.Text;
         }
 
-        private void txtShowConfigKey_TextChanged(object sender, EventArgs e)
+        private void txtToggleConfigKey_TextChanged(object sender, EventArgs e)
         {
-            MapAssistConfiguration.Loaded.HotkeyConfiguration.ShowConfigKey = txtShowConfigKey.Text;
+            MapAssistConfiguration.Loaded.HotkeyConfiguration.ToggleConfigKey = txtToggleConfigKey.Text;
         }
 
         private void btnWalkableColor_Click(object sender, EventArgs e)

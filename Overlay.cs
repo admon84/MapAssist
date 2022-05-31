@@ -205,7 +205,7 @@ namespace MapAssist
                     }
                 }
 
-                if (keys == new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.ShowConfigKey))
+                if (keys == new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.ToggleConfigKey))
                 {
                     if (_configEditor.Visible)
                     {
