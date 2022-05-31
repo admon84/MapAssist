@@ -790,12 +790,6 @@ Matriarchal Spear:
 
 #### Assassin Katars ############################
 Assassin Katars:
-  - Tiers: [exceptional, elite] # Unid Magic/Rare Claws
-    Qualities: [magic, rare]
-    Min Area Level: 67
-    Min Quality Level: 45
-    Ethereal: false
-    PlaySoundOnDrop: false
   - Qualities: [magic, rare] # Magic/Rare Claw >> +4 Traps Claws
     Class Skill Tree:
       Assassin Traps: 4
@@ -832,6 +826,30 @@ Assassin Katars:
       Shadow Master: 1
       Weapon Block: 1
       Venom: 1
+
+Greater Claws:
+  - Qualities: [magic, rare] # Unid Magic/Rare Claws
+    Min Area Level: 67
+    Ethereal: false
+    PlaySoundOnDrop: false
+
+Greater Talons:
+  - Qualities: [magic, rare] # Unid Magic/Rare Claws
+    Min Area Level: 67
+    Ethereal: false
+    PlaySoundOnDrop: false
+
+Feral Claws:
+  - Qualities: [magic, rare] # Unid Magic/Rare Claws
+    Min Area Level: 67
+    Ethereal: false
+    PlaySoundOnDrop: false
+
+Runic Talons:
+  - Qualities: [magic, rare] # Unid Magic/Rare Claws
+    Min Area Level: 67
+    Ethereal: false
+    PlaySoundOnDrop: false
 
 #### Sorceress Orbs #############################
 Dimensional Shard:
