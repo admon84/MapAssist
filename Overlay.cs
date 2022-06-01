@@ -126,6 +126,8 @@ namespace MapAssist
                                 ? nextAnchor.Add(0, GameInfoPadding())
                                 : GameInfoAnchor(MapAssistConfiguration.Loaded.ItemLog.Position);
                             _compositor.DrawItemLog(gfx, itemLogAnchor);
+
+                            if (Program.isPrecompiled) _compositor.DrawWatermark(gfx);
                         }
                     }
                 }
@@ -159,23 +161,23 @@ namespace MapAssist
                 {
                     if (keys == new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.ToggleKey))
                     {
+                        MapAssistConfiguration.Loaded.RenderingConfiguration.Offset = new Point(0, 0);
                         _show = !_show;
                     }
-
-                    if (keys == new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.HideMapKey))
+                    else if (keys == new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.HideMapKey))
                     {
                         _show = false;
                     }
-
-                    if (keys == new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.MapPositionsKey))
+                    else if (keys == new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.MapPositionsKey))
                     {
+                        MapAssistConfiguration.Loaded.RenderingConfiguration.Offset = new Point(0, 0);
+
                         var position = MapAssistConfiguration.Loaded.RenderingConfiguration.Position;
                         MapAssistConfiguration.Loaded.RenderingConfiguration.Position = Enum.GetValues(typeof(MapPosition))
                             .Cast<MapPosition>().Concat(new[] { default(MapPosition) })
                             .SkipWhile(e => !position.Equals(e)).Skip(1).First();
                     }
-
-                    if (keys == new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.ZoomInKey))
+                    else if (keys == new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.ZoomInKey))
                     {
                         var zoomLevel = MapAssistConfiguration.Loaded.RenderingConfiguration.ZoomLevel;
 
@@ -186,8 +188,7 @@ namespace MapAssist
                               (int)(MapAssistConfiguration.Loaded.RenderingConfiguration.InitialSize * 0.05f);
                         }
                     }
-
-                    if (keys == new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.ZoomOutKey))
+                    else if (keys == new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.ZoomOutKey))
                     {
                         var zoomLevel = MapAssistConfiguration.Loaded.RenderingConfiguration.ZoomLevel;
 
@@ -198,10 +199,28 @@ namespace MapAssist
                               (int)(MapAssistConfiguration.Loaded.RenderingConfiguration.InitialSize * 0.05f);
                         }
                     }
-
-                    if (keys == new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.ExportItemsKey))
+                    else if (keys == new Hotkey(MapAssistConfiguration.Loaded.HotkeyConfiguration.ExportItemsKey))
                     {
                         ItemExport.ExportPlayerInventory(_gameData.PlayerUnit, _gameData.AllItems);
+                    }
+
+                    var offsetMoveBy = 32; // Brute forced to match in game movements
+
+                    if (keys == new Hotkey("Up"))
+                    {
+                        MapAssistConfiguration.Loaded.RenderingConfiguration.Offset = MapAssistConfiguration.Loaded.RenderingConfiguration.Offset.Add(0, offsetMoveBy);
+                    }
+                    else if (keys == new Hotkey("Down"))
+                    {
+                        MapAssistConfiguration.Loaded.RenderingConfiguration.Offset = MapAssistConfiguration.Loaded.RenderingConfiguration.Offset.Add(0, -offsetMoveBy);
+                    }
+                    else if (keys == new Hotkey("Left"))
+                    {
+                        MapAssistConfiguration.Loaded.RenderingConfiguration.Offset = MapAssistConfiguration.Loaded.RenderingConfiguration.Offset.Add(offsetMoveBy, 0);
+                    }
+                    else if (keys == new Hotkey("Right"))
+                    {
+                        MapAssistConfiguration.Loaded.RenderingConfiguration.Offset = MapAssistConfiguration.Loaded.RenderingConfiguration.Offset.Add(-offsetMoveBy, 0);
                     }
                 }
 
