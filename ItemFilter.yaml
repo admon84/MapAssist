@@ -122,18 +122,12 @@ Wire Fleece:
     Ethereal: true
 
 #### Shields ####################################
-Shields:
-  - Tiers: elite
-    Qualities: [normal, superior] # Runeword Base >> Dream
-    Sockets: [3]
-    Ethereal: false
-
 Monarch:
   - Qualities: magic # Unid Magic Monarch
     Min Area Level: 67
     PlaySoundOnDrop: false
-  - Qualities: [normal, superior] # Runeword Base >> Phoenix, Spirit
-    Sockets: [0, 4]
+  - Qualities: [normal, superior] # Runeword Base >> Dream, Dragon, Sanctuary, Phoenix, Spirit
+    Sockets: [0, 3, 4]
   - Qualities: magic # Jeweler's Monarch >> 4os, 17 FHR
     Ethereal: false
     Sockets: [4]
@@ -151,6 +145,11 @@ Ward:
     Ethereal: false
     Sockets: [4]
     Faster Block Rate: 30
+
+Troll Nest:
+  - Qualities: [normal, superior] # Runeword Base >> Dream
+    Sockets: [3]
+    Ethereal: false
 
 #### Gloves #####################################
 Gloves:
@@ -341,8 +340,8 @@ Paladin Shields:
   - Tiers: elite # Unid Rare Pally Shield
     Qualities: rare
     Ethereal: false
-  - Qualities: [normal, superior] # Runeword Base >> Spirit >> +All Res
-    Sockets: [0, 4]
+  - Qualities: [normal, superior] # Runeword Base >> Dream, Dragon, Spirit >> +All Res
+    Sockets: [0, 3, 4]
     All Resist: 40
   - Tiers: elite # Runeword Base >> Exile >> +60% ED
     Qualities: superior
