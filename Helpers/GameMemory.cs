@@ -99,7 +99,7 @@ namespace MapAssist.Helpers
                     PlayerUnits[_currentProcessId] = playerUnit;
                 }
                 var stashTabOrder = rawPlayerUnits
-                    .Where(o => o.StateList.Contains(State.STATE_SHAREDSTASH) || o.IsPlayer)
+                    .Where(o => o.StateList.Contains(State.SharedStash) || o.IsPlayer)
                     .OrderBy(o => o.Struct.UnkSortStashesBy)
                     .Select(o => o.UnitId).ToList();
 
@@ -187,8 +187,13 @@ namespace MapAssist.Helpers
                 // Players
                 var playerList = rawPlayerUnits.Where(x => x.UnitType == UnitType.Player && x.IsPlayer)
                     .Select(x => x.UpdateRosterEntry(rosterData)).ToArray()
-                    .Select(x => x.UpdateParties(playerUnit.RosterEntry)).ToArray()
                     .Where(x => x != null && x.UnitId < uint.MaxValue).ToDictionary(x => x.UnitId, x => x);
+
+                // Roster
+                foreach (var entry in rosterData.List)
+                {
+                    entry.UpdateParties(playerUnit.RosterEntry);
+                }
 
                 // Corpses
                 var corpseList = rawPlayerUnits.Where(x => x.UnitType == UnitType.Player && x.IsCorpse).Concat(Corpses[_currentProcessId].Values).Distinct().ToArray();
@@ -468,7 +473,7 @@ namespace MapAssist.Helpers
                 Items.InventoryItemUnitIdsToSkip.Add(_currentProcessId, new HashSet<uint>());
                 Items.ItemVendors.Add(_currentProcessId, new Dictionary<uint, Npc>());
                 Items.ItemLog.Add(_currentProcessId, new List<ItemLogEntry>());
-                Items.ItemDisplayNames.Add(_currentProcessId, new Dictionary<uint, string>());
+                Items.ItemDisplayNames.Add(_currentProcessId, new Dictionary<string, string>());
             }
             else
             {

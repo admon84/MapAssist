@@ -1,4 +1,4 @@
-﻿using GameOverlay.Drawing;
+using GameOverlay.Drawing;
 using GameOverlay.Windows;
 using MapAssist.Files.Font;
 using MapAssist.Settings;
@@ -314,19 +314,27 @@ namespace MapAssist.Helpers
                 {
                     var destinationArea = (Area)Enum.ToObject(typeof(Area), gameObject.ObjectData.InteractType);
 
-                    if (MapAssistConfiguration.Loaded.MapConfiguration.Portal.CanDrawIcon())
+                    var playerNameUnicode = Encoding.UTF8.GetString(gameObject.ObjectData.Owner).TrimEnd((char)0);
+                    var playerName = !string.IsNullOrWhiteSpace(playerNameUnicode) ? playerNameUnicode : null;
+
+                    var rosterEntry = _gameData.Roster.List.FirstOrDefault(x => x.Name == playerNameUnicode);
+
+                    var render = rosterEntry != null && rosterEntry.UnitId == _gameData.PlayerUnit.UnitId ? MapAssistConfiguration.Loaded.MapConfiguration.MyPortal :
+                        rosterEntry != null && rosterEntry.InParty ? MapAssistConfiguration.Loaded.MapConfiguration.PartyPortal :
+                        rosterEntry != null ? MapAssistConfiguration.Loaded.MapConfiguration.NonPartyPortal :
+                        MapAssistConfiguration.Loaded.MapConfiguration.GamePortal;
+
+                    if (render.CanDrawIcon())
                     {
-                        drawPoiIcons.Add((MapAssistConfiguration.Loaded.MapConfiguration.Portal, gameObject.Position));
+                        drawPoiIcons.Add((render, gameObject.Position));
                     }
 
-                    if (MapAssistConfiguration.Loaded.MapConfiguration.Portal.CanDrawLabel(destinationArea))
+                    if (render.CanDrawLabel(destinationArea))
                     {
-                        var playerNameUnicode = Encoding.UTF8.GetString(gameObject.ObjectData.Owner).TrimEnd((char)0);
-                        var playerName = !string.IsNullOrWhiteSpace(playerNameUnicode) ? playerNameUnicode : null;
                         var label = destinationArea.PortalLabel(_gameData.Difficulty, playerName);
 
                         if (string.IsNullOrWhiteSpace(label) || label == "None") continue;
-                        drawPoiLabels.Add((MapAssistConfiguration.Loaded.MapConfiguration.Portal, gameObject.Position, label, null));
+                        drawPoiLabels.Add((render, gameObject.Position, label, null));
                     }
                 }
                 else if (gameObject.IsArmorWeapRack && MapAssistConfiguration.Loaded.MapConfiguration.ArmorWeapRack.CanDrawIcon())
@@ -492,12 +500,6 @@ namespace MapAssist.Helpers
 
         private void DrawItems(Graphics gfx)
         {
-            var areasToRender = new AreaData[] { _areaData };
-            if (_areaData.Area.RequiresStitching())
-            {
-                areasToRender = areasToRender.Concat(_areaData.AdjacentAreas.Values.Where(area => area.Area.RequiresStitching())).ToArray();
-            }
-
             var drawItemIcons = new List<(IconRendering, Point)>();
             var drawItemLabels = new List<(PointOfInterestRendering, Point, string, Color?)>();
 
@@ -507,7 +509,7 @@ namespace MapAssist.Helpers
                 {
                     if (item.IsValidItem && item.IsDropped && !item.IsIdentified)
                     {
-                        if (!areasToRender.Any(area => area.IncludesPoint(item.Position))) continue; // Don't show item if not in drawn areas
+                        if (!_areaData.IncludesPoint(item.Position) && !IsInBounds(item.Position, _gameData.PlayerPosition)) continue; // Don't show item if not in drawn areas
 
                         var itemPosition = item.Position;
                         var render = MapAssistConfiguration.Loaded.MapConfiguration.Item;
@@ -611,7 +613,7 @@ namespace MapAssist.Helpers
                         if (!myPlayer && !areasToRender.Any(area => area.IncludesPoint(playerUnit.Position))) continue; // Don't show player if not in drawn areas
 
                         // use data from the unit table if available
-                        if (playerUnit.InParty)
+                        if (playerUnit.RosterEntry.InParty)
                         {
                             var rendering = myPlayer
                                 ? MapAssistConfiguration.Loaded.MapConfiguration.Player
@@ -640,7 +642,7 @@ namespace MapAssist.Helpers
                             // not in my party
                             var rendering = (myPlayer
                                 ? MapAssistConfiguration.Loaded.MapConfiguration.Player
-                                : (!playerUnit.IsCorpse && (playerUnit.IsHostile || _gameData.PlayerUnit.IsHostileTo(player))
+                                : (!playerUnit.IsCorpse && (playerUnit.RosterEntry.IsHostile || playerUnit.RosterEntry.IsHostileTo)
                                     ? MapAssistConfiguration.Loaded.MapConfiguration.HostilePlayer
                                     : MapAssistConfiguration.Loaded.MapConfiguration.NonPartyPlayer));
 
@@ -709,7 +711,7 @@ namespace MapAssist.Helpers
             }
         }
 
-        public void DrawBuffs(Graphics gfx)
+        public void DrawBuffs(Graphics gfx, Point mouseRelativePos)
         {
             RenderTarget renderTarget = gfx.GetRenderTarget();
             renderTarget.Transform = Matrix3x2.Identity.ToDXMatrix();
@@ -756,26 +758,27 @@ namespace MapAssist.Helpers
 
             foreach (var state in stateList)
             {
-                var stateStr = Enum.GetName(typeof(State), state).Substring(6);
-                var resImg = Properties.Resources.ResourceManager.GetObject(stateStr);
+                var resImg = Properties.Resources.ResourceManager.GetObject(state.ToString());
 
                 if (resImg != null)
                 {
                     Color buffColor = States.StateColor(state);
-                    if (state == State.STATE_CONVICTION && _gameData.PlayerUnit.Skills.RightSkillId != Skill.Conviction && !_gameData.PlayerUnit.IsActiveInfinity)
+                    if (state == State.Conviction && _gameData.PlayerUnit.Skills.RightSkillId != Skill.Conviction && !_gameData.PlayerUnit.IsActiveInfinity)
                     {
                         buffColor = States.DebuffColor;
                     }
 
                     if (buffsByColor.ContainsKey(buffColor))
                     {
-                        buffsByColor[buffColor].Add(CreateResourceBitmap(gfx, stateStr));
+                        var bmp = CreateResourceBitmap(gfx, state.ToString());
+                        bmp.Tag = state.ToString().ToProperCase();
+                        buffsByColor[buffColor].Add(bmp);
                         totalBuffs++;
                     }
 
-                    var loweredRes = (state == State.STATE_CONVICTION && buffColor == States.DebuffColor)
-                         || state == State.STATE_CONVICTED
-                         || state == State.STATE_LOWERRESIST;
+                    var loweredRes = (state == State.Conviction && buffColor == States.DebuffColor)
+                         || state == State.Convicted
+                         || state == State.LowerResist;
 
                     if (MapAssistConfiguration.Loaded.RenderingConfiguration.BuffAlertLowRes && loweredRes)
                     {
@@ -813,9 +816,16 @@ namespace MapAssist.Helpers
                         var buffColor = buff.Key;
                         var drawPoint = new Point((gfx.Width / 2f) - (totalBuffs * imgDimensions / 2f) + (buffIndex * imgDimensions), buffYPos);
                         DrawBitmap(gfx, buffImg, drawPoint, 1, size: buffImageScale);
-
                         var size = new Point(imgDimensions + buffImageScale, imgDimensions + buffImageScale);
                         var rect = new Rectangle(drawPoint.X, drawPoint.Y, drawPoint.X + size.X, drawPoint.Y + size.Y);
+
+                        if (rect.IncludesPoint(mouseRelativePos))
+                        {
+                            var fontFamily = MapAssistConfiguration.Loaded.ItemLog.LabelFont;
+                            var fontSize = (float)MapAssistConfiguration.Loaded.ItemLog.LabelFontSize;
+
+                            DrawText(gfx, new Point(drawPoint.X + size.X / 2, drawPoint.Y - 15), (string)buffImg.Tag, fontFamily, fontSize, Color.White, true, TextAlign.Center, 0.8f);
+                        }
 
                         var pen = new Pen(buffColor, buffImageScale);
                         if (buffColor == States.DebuffColor)
