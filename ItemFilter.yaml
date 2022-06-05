@@ -342,7 +342,7 @@ Paladin Shields:
     Ethereal: false
   - Qualities: [normal, superior] # Runeword Base >> Dream, Dragon, Spirit >> +All Res
     Sockets: [0, 3, 4]
-    All Resist: 40
+    All Resist: 30
   - Tiers: elite # Runeword Base >> Exile >> +60% ED
     Qualities: superior
     Sockets: [4]
@@ -686,7 +686,7 @@ Phase Blade:
     PlaySoundOnDrop: false
   - Qualities: [magic, rare] # Magic/Rare Phase >> 4os
     Sockets: [4]
-  - Qualities: [normal, superior] # Runeword Base >> Oath, Grief, Destruction Last Wish, Unbending Will
+  - Qualities: [normal, superior] # Runeword Base >> Oath, Grief, Destruction, Last Wish, Unbending Will
     Sockets: [4, 5, 6]
   - Qualities: unique # Azurewrath
 
