@@ -14,6 +14,7 @@ namespace MapAssist.Helpers
         private static Dictionary<int, Session> _sessions = new Dictionary<int, Session>();
         private static int _currentProcessId;
 
+        public static Dictionary<int, MapSeed> MapSeeds = new Dictionary<int, MapSeed>();
         public static Dictionary<int, UnitPlayer> PlayerUnits = new Dictionary<int, UnitPlayer>();
         public static Dictionary<int, Dictionary<string, UnitPlayer>> Corpses = new Dictionary<int, Dictionary<string, UnitPlayer>>();
         public static Dictionary<object, object> cache = new Dictionary<object, object>();
@@ -88,14 +89,8 @@ namespace MapAssist.Helpers
                 }
                 _errorThrown = false;
 
-                if (!PlayerUnits.ContainsKey(_currentProcessId))
-                {
-                    PlayerUnits.Add(_currentProcessId, playerUnit);
-                }
-                else
-                {
-                    PlayerUnits[_currentProcessId] = playerUnit;
-                }
+                PlayerUnits[_currentProcessId] = playerUnit;
+
                 var stashTabOrder = rawPlayerUnits
                     .Where(o => o.StateList.Contains(State.SharedStash) || o.IsPlayer)
                     .OrderBy(o => o.Struct.UnkSortStashesBy)
@@ -109,6 +104,12 @@ namespace MapAssist.Helpers
 
                     _errorThrown = true;
                     throw new Exception("Level id out of bounds.");
+                }
+
+                if (!MapSeeds.TryGetValue(_currentProcessId, out var _mapSeedData))
+                {
+                    _mapSeedData = new MapSeed();
+                    MapSeeds[_currentProcessId] = _mapSeedData;
                 }
 
                 // Update area timer
@@ -130,30 +131,22 @@ namespace MapAssist.Helpers
                 }
 
                 // Check for map seed
-                var mapSeedData = new MapSeed(GameManager.MapSeedOffset);
-                var mapSeed = mapSeedData.Seed;
+                var mapSeed = _mapSeedData.Get(playerUnit);
+                var mapSeedIsReady = _mapSeedData.IsReady;
 
-                if (mapSeed <= 0 || mapSeed > 0xFFFFFFFF)
+                if (mapSeedIsReady)
                 {
-                    if (_errorThrown) return null;
+                    if (mapSeed <= 0 || mapSeed > 0xFFFFFFFF)
+                    {
+                        if (_errorThrown) return null;
 
-                    _errorThrown = true;
-                    throw new Exception("Map seed is out of bounds.");
-                }
-
-                // Check if exited the game
-                if (!_lastMapSeeds.ContainsKey(_currentProcessId))
-                {
-                    _lastMapSeeds.Add(_currentProcessId, 0);
-                }
-
-                if (!_playerMapChanged.ContainsKey(_currentProcessId))
-                {
-                    _playerMapChanged.Add(_currentProcessId, false);
+                        _errorThrown = true;
+                        throw new Exception("Map seed is out of bounds.");
+                    }
                 }
 
                 // Check if new game
-                if (mapSeed == _lastMapSeeds[_currentProcessId])
+                if (_lastMapSeeds.ContainsKey(_currentProcessId) && mapSeed == _lastMapSeeds[_currentProcessId])
                 {
                     _playerMapChanged[_currentProcessId] = false;
                 }
@@ -315,7 +308,7 @@ namespace MapAssist.Helpers
                     rawItemUnits.Add(item);
                 }
 
-                var itemList = Items.ItemLog[_currentProcessId].Select(item =>
+                Items.ItemLog[_currentProcessId].Select(item =>
                 {
                     if (cache.TryGetValue(item.ItemHashString, out var cachedItem) && ((UnitItem)cachedItem).HashString == item.ItemHashString)
                     {
@@ -327,7 +320,7 @@ namespace MapAssist.Helpers
                         item.UnitItem.MarkInvalid();
                     }
 
-                    return item.UnitItem;
+                    return item;
                 }).Where(x => x != null).ToArray();
 
                 // Player wearing items
@@ -371,6 +364,7 @@ namespace MapAssist.Helpers
                 {
                     PlayerPosition = playerUnit.Position,
                     MapSeed = mapSeed,
+                    MapSeedReady = mapSeedIsReady,
                     Area = levelId,
                     Difficulty = gameDifficulty,
                     MainWindowHandle = currentWindowHandle,
@@ -383,9 +377,8 @@ namespace MapAssist.Helpers
                     Summons = summonsList,
                     Objects = objectList,
                     Missiles = missileList,
-                    Items = itemList,
+                    Items = Items.ItemLog[_currentProcessId].ToArray(),
                     AllItems = allItems,
-                    ItemLog = Items.ItemLog[_currentProcessId].ToArray(),
                     Session = _sessions[_currentProcessId],
                     Roster = rosterData,
                     MenuOpen = menuData,

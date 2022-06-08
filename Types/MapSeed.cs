@@ -1,36 +1,52 @@
 ﻿using MapAssist.Helpers;
-using MapAssist.Interfaces;
-using System;
+using System.ComponentModel;
 
 namespace MapAssist.Types
 {
-    public class MapSeed : IUpdatable<MapSeed>
+    public class MapSeed
     {
-        private readonly IntPtr _pMapSeed;
-        public uint Seed { get; private set; }
+        private static readonly NLog.Logger _log = NLog.LogManager.GetCurrentClassLogger();
 
-        public MapSeed(IntPtr pMapSeed)
-        {
-            _pMapSeed = pMapSeed;
-            Update();
-        }
+        private BackgroundWorker BackgroundCalculator;
+        private uint GameSeedXor { get; set; } = 0;
 
-        public MapSeed Update()
+        public bool IsReady => BackgroundCalculator != null && GameSeedXor != 0;
+
+        public uint Get(UnitPlayer player)
         {
-            using (var processContext = GameManager.GetProcessContext())
+            if (GameSeedXor != 0)
             {
-                try
-                {
-                    var pMapSeedData = processContext.Read<IntPtr>(_pMapSeed);
-                    var mapSeedData = processContext.Read<Structs.MapSeed>(pMapSeedData);
-
-                    Seed = mapSeedData.check > 0 ? mapSeedData.mapSeed1 : mapSeedData.mapSeed2; // Use this if check offset is 0x110
-                    //Seed = mapSeedData.check > 0 ? mapSeedData.mapSeed2 : mapSeedData.mapSeed1; // Use this if check offset is 0x124
-                    //Seed = mapSeedData.check > 0 ? mapSeedData.mapSeed1 : mapSeedData.mapSeed2; // Use this if check offset is 0x830
-                }
-                catch (Exception) { }
+                return (uint)(player.InitSeedHash ^ GameSeedXor);
             }
-            return this;
+            else if (BackgroundCalculator == null)
+            {
+                var InitSeedHash = player.InitSeedHash;
+                var EndSeedHash = player.EndSeedHash;
+
+                BackgroundCalculator = new BackgroundWorker();
+
+                BackgroundCalculator.DoWork += (sender, args) =>
+                {
+                    var foundSeed = D2Hash.Reverse(EndSeedHash);
+
+                    if (foundSeed != null)
+                    {
+                        GameSeedXor = (uint)InitSeedHash ^ (uint)foundSeed;
+                    }
+
+                    BackgroundCalculator.Dispose();
+
+                    if (GameSeedXor == 0)
+                    {
+                        _log.Info("Failed to brute force map seed");
+                        BackgroundCalculator = null;
+                    }
+                };
+
+                BackgroundCalculator.RunWorkerAsync();
+            }
+
+            return 0;
         }
     }
 }

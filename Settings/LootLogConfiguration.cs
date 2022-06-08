@@ -70,7 +70,10 @@ namespace MapAssist.Settings
 
         public ItemTier[] Tiers { get; set; }
         public bool PlaySoundOnDrop { get; set; } = true;
+        public bool CheckVendor { get; set; } = true;
+        public bool ShowInLog { get; set; } = true;
         public string SoundFile { get; set; }
+        public PointOfInterestRendering Rendering { get; set; }
         public ItemQuality[] Qualities { get; set; }
         public int[] Sockets { get; set; }
         public bool? Ethereal { get; set; }

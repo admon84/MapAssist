@@ -504,17 +504,21 @@ namespace MapAssist.Helpers
 
             if (MapAssistConfiguration.Loaded.ItemLog.Enabled)
             {
-                foreach (var item in _gameData.Items)
+                foreach (var itemEntry in _gameData.Items)
                 {
+                    var item = itemEntry.UnitItem;
+
                     if (item.IsValidItem && item.IsDropped && !item.IsIdentified)
                     {
                         if (!_areaData.IncludesPoint(item.Position) && !IsInBounds(item.Position, _gameData.PlayerPosition)) continue; // Don't show item if not in drawn areas
 
                         var itemPosition = item.Position;
-                        var render = MapAssistConfiguration.Loaded.MapConfiguration.Item;
+                        var render = itemEntry.Rule.Rendering ?? MapAssistConfiguration.Loaded.MapConfiguration.Item;
 
-                        drawItemIcons.Add((render, itemPosition));
-                        drawItemLabels.Add((render, item.Position, item.ItemBaseName, item.ItemBaseColor));
+                        if (render.CanDrawIcon())
+                            drawItemIcons.Add((render, itemPosition));
+
+                        drawItemLabels.Add((render, item.Position, item.ItemBaseName, render.LabelColor.A > 0 ? render.LabelColor : item.ItemBaseColor));
                     }
                 }
             }
@@ -1022,7 +1026,12 @@ namespace MapAssist.Helpers
                 anchor.Y += lineHeight;
             }
 
-            if (errorLoadingAreaData)
+            if (!_gameData.MapSeedReady)
+            {
+                DrawText(gfx, anchor, "Finding map seed...", font, fontSize * 1.3f, Color.Orange, textShadow, textAlign);
+                anchor.Y += lineHeight;
+            }
+            else if (errorLoadingAreaData)
             {
                 DrawText(gfx, anchor, "ERROR LOADING AREA!", font, fontSize * 1.5f, Color.Orange, textShadow, textAlign);
                 anchor.Y += lineHeight;
@@ -1048,7 +1057,7 @@ namespace MapAssist.Helpers
             var shadowOffset = fontSize * 0.0625f; // 1/16th
 
             // Item Log
-            var itemsToShow = _gameData.ItemLog.Where(item => item != null && !item.ItemLogExpired && item.UnitItem.ItemBaseColor != Color.Empty).ToArray();
+            var itemsToShow = _gameData.Items.Where(item => item != null && !item.ItemLogExpired && item.UnitItem.ItemBaseColor != Color.Empty && (item.Rule?.ShowInLog ?? true)).ToArray();
             for (var i = 0; i < itemsToShow.Length; i++)
             {
                 var item = itemsToShow[i];
