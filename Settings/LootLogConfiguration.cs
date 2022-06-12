@@ -265,7 +265,7 @@ namespace MapAssist.Settings
         {
             foreach (var property in GetType().GetProperties())
             {
-                if (property.Name == "Defense") continue;
+                if (SkipPropsForUnidItemCheck.Contains(property.Name)) continue;
 
                 var propType = property.PropertyType;
                 if (propType == typeof(object)) continue;
@@ -284,5 +284,18 @@ namespace MapAssist.Settings
 
             return true;
         }
+
+        private List<string> SkipPropsForUnidItemCheck = new List<string>()
+        {
+            "Defense",
+            "MinDamage",
+            "MaxDamage",
+            "MinAreaLevel",
+            "MaxAreaLevel",
+            "MinPlayerLevel",
+            "MaxPlayerLevel",
+            "MinQualityLevel",
+            "MaxQualityLevel"
+        };
     }
 }
