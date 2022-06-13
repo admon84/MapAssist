@@ -331,6 +331,22 @@ GameInfo:
   LabelFont: Exocet Blizzard Mixed Caps
   LabelFontSize: 16
   LabelTextShadow: true
+Portraits:
+  ShowArea: true
+  ShowAreaLevel: false
+  ShowPlayerLevel: true
+  Area:
+    Font: Formal 436
+    FontSize: 10
+    Opacity: 0.8
+    TextColor: 185, 126, 0
+    TextShadow: true
+  PlayerLevel:
+    Font: Exocet Blizzard Mixed Caps
+    FontSize: 12
+    Opacity: 0.7
+    TextColor: 196, 196, 196
+    TextShadow: true
 D2Path: ''
 LanguageCode: enUS
 DPIAware: false

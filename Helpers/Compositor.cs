@@ -235,10 +235,8 @@ namespace MapAssist.Helpers
                 areasToRender = areasToRender.Concat(_areaData.AdjacentAreas.Values.Where(area => area.Area.RequiresStitching())).ToArray();
             }
 
-            foreach (var area in areasToRender)
+            foreach (var area in areasToRender.Where(a => a.PointsOfInterest != null).ToArray())
             {
-                if (area.PointsOfInterest == null) continue;
-
                 foreach (var poi in area.PointsOfInterest)
                 {
                     if ((new PoiType[] { PoiType.PreviousArea, PoiType.NextArea }).Contains(poi.Type))
@@ -382,25 +380,26 @@ namespace MapAssist.Helpers
 
         private void DrawMissiles(Graphics gfx)
         {
+            var missileRenderingConfig = new IconRendering[]
+            {
+                MapAssistConfiguration.Loaded.MapConfiguration.MissilePhysicalLarge,
+                MapAssistConfiguration.Loaded.MapConfiguration.MissilePhysicalSmall,
+                MapAssistConfiguration.Loaded.MapConfiguration.MissileFireLarge,
+                MapAssistConfiguration.Loaded.MapConfiguration.MissileFireSmall,
+                MapAssistConfiguration.Loaded.MapConfiguration.MissileIceLarge,
+                MapAssistConfiguration.Loaded.MapConfiguration.MissileIceSmall,
+                MapAssistConfiguration.Loaded.MapConfiguration.MissileLightLarge,
+                MapAssistConfiguration.Loaded.MapConfiguration.MissileLightSmall,
+                MapAssistConfiguration.Loaded.MapConfiguration.MissilePoisonLarge,
+                MapAssistConfiguration.Loaded.MapConfiguration.MissilePoisonSmall,
+                MapAssistConfiguration.Loaded.MapConfiguration.MissileMagicLarge,
+                MapAssistConfiguration.Loaded.MapConfiguration.MissileMagicSmall,
+            };
+
             foreach (var missile in _gameData.Missiles)
             {
                 if (MissileTypes._MissileTypes.TryGetValue(missile.TxtFileNo, out var missileType))
                 {
-                    var missileRenderingConfig = new IconRendering[]
-                    {
-                        MapAssistConfiguration.Loaded.MapConfiguration.MissilePhysicalLarge,
-                        MapAssistConfiguration.Loaded.MapConfiguration.MissilePhysicalSmall,
-                        MapAssistConfiguration.Loaded.MapConfiguration.MissileFireLarge,
-                        MapAssistConfiguration.Loaded.MapConfiguration.MissileFireSmall,
-                        MapAssistConfiguration.Loaded.MapConfiguration.MissileIceLarge,
-                        MapAssistConfiguration.Loaded.MapConfiguration.MissileIceSmall,
-                        MapAssistConfiguration.Loaded.MapConfiguration.MissileLightLarge,
-                        MapAssistConfiguration.Loaded.MapConfiguration.MissileLightSmall,
-                        MapAssistConfiguration.Loaded.MapConfiguration.MissilePoisonLarge,
-                        MapAssistConfiguration.Loaded.MapConfiguration.MissilePoisonSmall,
-                        MapAssistConfiguration.Loaded.MapConfiguration.MissileMagicLarge,
-                        MapAssistConfiguration.Loaded.MapConfiguration.MissileMagicSmall,
-                    };
                     var render = (IconRendering)missileRenderingConfig[(int)missileType].Clone();
                     if (render.CanDrawIcon())
                     {
@@ -547,8 +546,7 @@ namespace MapAssist.Helpers
 
             foreach (var pet in _gameData.Summons.ToArray())
             {
-                var rendering = MapAssistConfiguration.Loaded.MapConfiguration.MySummons;
-                if (!pet.IsPlayerOwned) rendering = MapAssistConfiguration.Loaded.MapConfiguration.OtherSummons;
+                var rendering = pet.IsPlayerOwned ? MapAssistConfiguration.Loaded.MapConfiguration.MySummons : MapAssistConfiguration.Loaded.MapConfiguration.OtherSummons;
 
                 if (rendering.CanDrawIcon())
                 {
@@ -556,12 +554,9 @@ namespace MapAssist.Helpers
                 }
             }
 
-            foreach (var merc in _gameData.Mercs.ToArray())
+            foreach (var merc in _gameData.Mercs.Where(x => !x.IsCorpse).ToArray())
             {
-                if (merc.IsCorpse) continue;
-
-                var rendering = MapAssistConfiguration.Loaded.MapConfiguration.MyMerc;
-                if (!merc.IsPlayerOwned) rendering = MapAssistConfiguration.Loaded.MapConfiguration.OtherMercs;
+                var rendering = merc.IsPlayerOwned ? MapAssistConfiguration.Loaded.MapConfiguration.MyMerc : MapAssistConfiguration.Loaded.MapConfiguration.OtherMercs;
 
                 if (rendering.CanDrawIcon())
                 {
@@ -959,43 +954,39 @@ namespace MapAssist.Helpers
             var textAlign = MapAssistConfiguration.Loaded.GameInfo.Position == GameInfoPosition.TopRight ? TextAlign.Right : TextAlign.Left;
             var textColor = Color.FromArgb(199, 179, 119);
 
+            void DrawGameInfoText(string text)
+            {
+                DrawText(gfx, anchor, text, font, fontSize, textColor, textShadow, textAlign);
+                anchor.Y += lineHeight;
+            }
+
             // Game Name
             if (MapAssistConfiguration.Loaded.GameInfo.ShowGameName && _gameData.Session.GameName.Length > 0)
             {
-                var gameNameText = "Game: " + _gameData.Session.GameName;
-                DrawText(gfx, anchor, gameNameText, font, fontSize, textColor, true, textAlign);
-                anchor.Y += lineHeight;
+                DrawGameInfoText("Game: " + _gameData.Session.GameName);
 
                 if (_gameData.Session.GamePass.Length > 0)
                 {
-                    var gamePassText = "Password: " + _gameData.Session.GamePass;
-                    DrawText(gfx, anchor, gamePassText, font, fontSize, textColor, true, textAlign);
-                    anchor.Y += lineHeight;
+                    DrawGameInfoText("Password: " + _gameData.Session.GamePass);
                 }
             }
 
             // Game Timer
             if (MapAssistConfiguration.Loaded.GameInfo.ShowGameTimer)
             {
-                var gameElapsed = "Game Time: " + _gameData.Session.GameTimerDisplay;
-                DrawText(gfx, anchor, gameElapsed, font, fontSize, textColor, textShadow, textAlign);
-                anchor.Y += lineHeight;
+                DrawGameInfoText("Game Time: " + _gameData.Session.GameTimerDisplay);
             }
 
             // Area
             if (MapAssistConfiguration.Loaded.GameInfo.ShowArea)
             {
-                var areaText = _gameData.Area.Name();
-                DrawText(gfx, anchor, areaText, font, fontSize, textColor, textShadow, textAlign);
-                anchor.Y += lineHeight;
+                DrawGameInfoText(_gameData.Area.Name());
             }
 
             // Difficulty
             if (MapAssistConfiguration.Loaded.GameInfo.ShowDifficulty)
             {
-                var difficultyText = "Difficulty: " + _gameData.Difficulty.ToString();
-                DrawText(gfx, anchor, difficultyText, font, fontSize, textColor, textShadow, textAlign);
-                anchor.Y += lineHeight;
+                DrawGameInfoText("Difficulty: " + _gameData.Difficulty.ToString());
             }
 
             // Area Level
@@ -1004,26 +995,20 @@ namespace MapAssist.Helpers
                 var areaLevel = _gameData.Area.Level(_gameData.Difficulty);
                 if (areaLevel > 0)
                 {
-                    var areaLevelText = "Area Level: " + areaLevel;
-                    DrawText(gfx, anchor, areaLevelText, font, fontSize, textColor, textShadow, textAlign);
-                    anchor.Y += lineHeight;
+                    DrawGameInfoText("Area Level: " + areaLevel);
                 }
             }
 
             // Area Timer
             if (MapAssistConfiguration.Loaded.GameInfo.ShowAreaTimer)
             {
-                var areaElapsed = "Area Time: " + _gameData.Session.AreaTimerDisplay;
-                DrawText(gfx, anchor, areaElapsed, font, fontSize, textColor, textShadow, textAlign);
-                anchor.Y += lineHeight;
+                DrawGameInfoText("Area Time: " + _gameData.Session.AreaTimerDisplay);
             }
 
             // Overlay FPS
             if (MapAssistConfiguration.Loaded.GameInfo.ShowOverlayFPS)
             {
-                var fpsText = "FPS: " + gfx.FPS.ToString() + " / DeltaTime: " + e.DeltaTime.ToString();
-                DrawText(gfx, anchor, fpsText, font, fontSize, textColor, textShadow, textAlign);
-                anchor.Y += lineHeight;
+                DrawGameInfoText("FPS: " + gfx.FPS.ToString() + " / DeltaTime: " + e.DeltaTime.ToString());
             }
 
             if (!_gameData.MapSeedReady)
@@ -1235,6 +1220,50 @@ namespace MapAssist.Helpers
                     }
                 }
             }
+        }
+
+        public void DrawPortraitsInfo(Graphics gfx)
+        {
+            if (_gameData.MenuOpen.EscMenu || _gameData.MenuOpen.IsLeftMenuOpen() || !_gameData.MenuOpen.Portraits) return;
+
+            // Player level and area on portraits
+            if (MapAssistConfiguration.Loaded.Portraits.ShowArea || MapAssistConfiguration.Loaded.Portraits.ShowPlayerLevel)
+            {
+                var portraitCount = 1;
+                var marginX = gfx.Height / 46;
+                var marginY = gfx.Height / 10.6f;
+                var offsetLevelY = marginY * .27f;
+                var padding = 6;
+
+                foreach (var player in _gameData.Roster.List)
+                {
+                    if (!player.InParty || player.UnitId == _gameData.PlayerUnit.UnitId) continue;
+
+                    portraitCount++;
+
+                    // Draw labels when player area is known
+                    if (player.Area != Area.None)
+                    {
+                        if (MapAssistConfiguration.Loaded.Portraits.ShowPlayerLevel && player.PlayerLevel > 0)
+                        {
+                            var position = new Point(marginX + padding, marginY * portraitCount - offsetLevelY);
+                            DrawPortraitsText(gfx, position, "Lvl " + player.PlayerLevel, MapAssistConfiguration.Loaded.Portraits.PlayerLevel);
+                        }
+
+                        if (MapAssistConfiguration.Loaded.Portraits.ShowArea)
+                        {
+                            var position = new Point(marginX, marginY * portraitCount + padding);
+                            var areaText = MapAssistConfiguration.Loaded.Portraits.ShowAreaLevel ? player.Area.MapLabel(_gameData.Difficulty) : player.Area.Name();
+                            DrawPortraitsText(gfx, position, areaText, MapAssistConfiguration.Loaded.Portraits.Area);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void DrawPortraitsText(Graphics gfx, Point position, string text, PortraitsRendering rendering)
+        {
+            DrawText(gfx, position, text, rendering.Font, gfx.ScaleFontSize((float)rendering.FontSize), rendering.TextColor, rendering.TextShadow, TextAlign.Left, rendering.Opacity);
         }
 
         public void DrawWatermark(Graphics gfx)

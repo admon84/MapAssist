@@ -167,6 +167,27 @@ namespace MapAssist
             btnCraftedColor.ForeColor = ContrastTextColor(btnCraftedColor.BackColor);
             btnClearCraftedColor.Visible = MapAssistConfiguration.Loaded.ItemLog.CraftedColor != MapAssistConfiguration.Default.ItemLog.CraftedColor;
 
+            chkPortraitsArea.Checked = MapAssistConfiguration.Loaded.Portraits.ShowArea;
+            chkPortraitsAreaLevel.Checked = MapAssistConfiguration.Loaded.Portraits.ShowAreaLevel;
+            btnAreaTextColor.BackColor = MapAssistConfiguration.Loaded.Portraits.Area.TextColor;
+            btnAreaTextColor.ForeColor = ContrastTextColor(btnSetColor.BackColor);
+            btnClearAreaTextColor.Visible = MapAssistConfiguration.Loaded.Portraits.Area.TextColor != MapAssistConfiguration.Default.Portraits.Area.TextColor;
+            chkPortraitsAreaTextShadow.Checked = MapAssistConfiguration.Loaded.Portraits.Area.TextShadow;
+            btnClearAreaFont.Visible = MapAssistConfiguration.Loaded.Portraits.Area.Font != MapAssistConfiguration.Default.Portraits.Area.Font ||
+                MapAssistConfiguration.Loaded.Portraits.Area.FontSize != MapAssistConfiguration.Default.Portraits.Area.FontSize;
+            portraitsAreaOpacity.Value = (int)Math.Round(MapAssistConfiguration.Loaded.Portraits.Area.Opacity * 100d / 5);
+            lblPortraitsAreaOpacity.Text = (portraitsAreaOpacity.Value * 5).ToString();
+
+            chkPortraitsPlayerLevel.Checked = MapAssistConfiguration.Loaded.Portraits.ShowPlayerLevel;
+            btnPlayerLevelTextColor.BackColor = MapAssistConfiguration.Loaded.Portraits.PlayerLevel.TextColor;
+            btnPlayerLevelTextColor.ForeColor = ContrastTextColor(btnSetColor.BackColor);
+            btnClearPlayerLevelTextColor.Visible = MapAssistConfiguration.Loaded.Portraits.PlayerLevel.TextColor != MapAssistConfiguration.Default.Portraits.PlayerLevel.TextColor;
+            chkPortraitsPlayerLevelTextShadow.Checked = MapAssistConfiguration.Loaded.Portraits.PlayerLevel.TextShadow;
+            btnClearPlayerLevelFont.Visible = MapAssistConfiguration.Loaded.Portraits.PlayerLevel.Font != MapAssistConfiguration.Default.Portraits.PlayerLevel.Font ||
+                MapAssistConfiguration.Loaded.Portraits.PlayerLevel.FontSize != MapAssistConfiguration.Default.Portraits.PlayerLevel.FontSize;
+            portraitsPlayerLevelOpacity.Value = (int)Math.Round(MapAssistConfiguration.Loaded.Portraits.PlayerLevel.Opacity * 100d / 5);
+            lblPortraitsPlayerLevelOpacity.Text = (portraitsPlayerLevelOpacity.Value * 5).ToString();
+
             if (MapAssistConfiguration.Loaded.MapColorConfiguration.Walkable != null)
             {
                 var color = (Color)MapAssistConfiguration.Loaded.MapColorConfiguration.Walkable;
@@ -1281,6 +1302,147 @@ namespace MapAssist
         private void chkLinesShrines_CheckedChanged(object sender, EventArgs e)
         {
             HandleLineToggle(chkLinesShrines, MapAssistConfiguration.Loaded.MapConfiguration.Shrine);
+        }
+
+        private void portraitsAreaOpacity_Scroll(object sender, EventArgs e)
+        {
+            MapAssistConfiguration.Loaded.Portraits.Area.Opacity = portraitsAreaOpacity.Value > 0
+                ? (float)Math.Round(portraitsAreaOpacity.Value * 5 / 100d, 2) : 0;
+            lblPortraitsAreaOpacity.Text = (portraitsAreaOpacity.Value * 5).ToString();
+        }
+
+        private void portraitsPlayerLevelOpacity_Scroll(object sender, EventArgs e)
+        {
+            MapAssistConfiguration.Loaded.Portraits.PlayerLevel.Opacity = portraitsPlayerLevelOpacity.Value > 0
+                ? (float)Math.Round(portraitsPlayerLevelOpacity.Value * 5 / 100d, 2) : 0;
+            lblPortraitsPlayerLevelOpacity.Text = (portraitsPlayerLevelOpacity.Value * 5).ToString();
+        }
+
+        private void chkPortraitsArea_CheckedChanged(object sender, EventArgs e)
+        {
+            MapAssistConfiguration.Loaded.Portraits.ShowArea = chkPortraitsArea.Checked;
+        }
+
+        private void chkPortraitsAreaLevel_CheckedChanged(object sender, EventArgs e)
+        {
+            MapAssistConfiguration.Loaded.Portraits.ShowAreaLevel = chkPortraitsAreaLevel.Checked;
+        }
+
+        private void chkPortraitsPlayerLevel_CheckedChanged(object sender, EventArgs e)
+        {
+            MapAssistConfiguration.Loaded.Portraits.ShowPlayerLevel = chkPortraitsPlayerLevel.Checked;
+        }
+
+        private void chkPortraitsAreaTextShadow_CheckedChanged(object sender, EventArgs e)
+        {
+            MapAssistConfiguration.Loaded.Portraits.Area.TextShadow = chkPortraitsAreaTextShadow.Checked;
+        }
+
+        private void chkPortraitsPlayerLevelTextShadow_CheckedChanged(object sender, EventArgs e)
+        {
+            MapAssistConfiguration.Loaded.Portraits.PlayerLevel.TextShadow = chkPortraitsPlayerLevelTextShadow.Checked;
+        }
+
+        private void btnAreaTextColor_Click(object sender, EventArgs e)
+        {
+            var (colorDlg, colorResult) = SelectColor(btnAreaTextColor.BackColor);
+            if (colorResult == DialogResult.OK)
+            {
+                MapAssistConfiguration.Loaded.Portraits.Area.TextColor = colorDlg.Color;
+                btnAreaTextColor.BackColor = colorDlg.Color;
+                btnAreaTextColor.ForeColor = ContrastTextColor(btnAreaTextColor.BackColor);
+
+                btnClearAreaTextColor.Visible = true;
+            }
+        }
+
+        private void btnClearAreaTextColor_Click(object sender, EventArgs e)
+        {
+            MapAssistConfiguration.Loaded.Portraits.Area.TextColor = MapAssistConfiguration.Default.Portraits.Area.TextColor;
+            btnAreaTextColor.BackColor = MapAssistConfiguration.Loaded.Portraits.Area.TextColor;
+            btnAreaTextColor.ForeColor = ContrastTextColor(btnAreaTextColor.BackColor);
+
+            btnClearWalkableColor.Visible = false;
+        }
+
+        private void btnPlayerLevelTextColor_Click(object sender, EventArgs e)
+        {
+            var (colorDlg, colorResult) = SelectColor(btnPlayerLevelTextColor.BackColor);
+            if (colorResult == DialogResult.OK)
+            {
+                MapAssistConfiguration.Loaded.Portraits.PlayerLevel.TextColor = colorDlg.Color;
+                btnPlayerLevelTextColor.BackColor = colorDlg.Color;
+                btnPlayerLevelTextColor.ForeColor = ContrastTextColor(btnPlayerLevelTextColor.BackColor);
+
+                btnClearPlayerLevelTextColor.Visible = true;
+            }
+        }
+
+        private void btnClearPlayerLevelTextColor_Click(object sender, EventArgs e)
+        {
+            MapAssistConfiguration.Loaded.Portraits.PlayerLevel.TextColor = MapAssistConfiguration.Default.Portraits.PlayerLevel.TextColor;
+            btnPlayerLevelTextColor.BackColor = MapAssistConfiguration.Loaded.Portraits.PlayerLevel.TextColor;
+            btnPlayerLevelTextColor.ForeColor = ContrastTextColor(btnPlayerLevelTextColor.BackColor);
+
+            btnClearPlayerLevelTextColor.Visible = false;
+        }
+
+        private void btnAreaFont_Click(object sender, EventArgs e)
+        {
+            var labelFont = MapAssistConfiguration.Loaded.Portraits.Area.Font;
+            var labelSize = (float)MapAssistConfiguration.Loaded.Portraits.Area.FontSize;
+            if (labelFont == null)
+            {
+                labelFont = "Helvetica";
+                labelSize = 16;
+            }
+            var fontDlg = new FontDialog();
+            fontDlg.Font = new Font(labelFont, labelSize, FontStyle.Regular);
+            fontDlg.ShowEffects = false;
+            if (fontDlg.ShowDialog() == DialogResult.OK)
+            {
+                MapAssistConfiguration.Loaded.Portraits.Area.Font = fontDlg.Font.Name;
+                MapAssistConfiguration.Loaded.Portraits.Area.FontSize = fontDlg.Font.Size;
+
+                btnClearAreaFont.Visible = true;
+            }
+        }
+
+        private void btnClearAreaFont_Click(object sender, EventArgs e)
+        {
+            MapAssistConfiguration.Loaded.Portraits.Area.Font = MapAssistConfiguration.Default.Portraits.Area.Font;
+            MapAssistConfiguration.Loaded.Portraits.Area.FontSize = MapAssistConfiguration.Default.Portraits.Area.FontSize;
+
+            btnClearAreaFont.Visible = false;
+        }
+
+        private void btnPlayerLevelFont_Click(object sender, EventArgs e)
+        {
+            var labelFont = MapAssistConfiguration.Loaded.Portraits.PlayerLevel.Font;
+            var labelSize = (float)MapAssistConfiguration.Loaded.Portraits.PlayerLevel.FontSize;
+            if (labelFont == null)
+            {
+                labelFont = "Helvetica";
+                labelSize = 16;
+            }
+            var fontDlg = new FontDialog();
+            fontDlg.Font = new Font(labelFont, labelSize, FontStyle.Regular);
+            fontDlg.ShowEffects = false;
+            if (fontDlg.ShowDialog() == DialogResult.OK)
+            {
+                MapAssistConfiguration.Loaded.Portraits.PlayerLevel.Font = fontDlg.Font.Name;
+                MapAssistConfiguration.Loaded.Portraits.PlayerLevel.FontSize = fontDlg.Font.Size;
+
+                btnClearPlayerLevelFont.Visible = true;
+            }
+        }
+
+        private void btnClearPlayerLevelFont_Click(object sender, EventArgs e)
+        {
+            MapAssistConfiguration.Loaded.Portraits.PlayerLevel.Font = MapAssistConfiguration.Default.Portraits.PlayerLevel.Font;
+            MapAssistConfiguration.Loaded.Portraits.PlayerLevel.FontSize = MapAssistConfiguration.Default.Portraits.PlayerLevel.FontSize;
+
+            btnClearPlayerLevelFont.Visible = false;
         }
     }
 }
