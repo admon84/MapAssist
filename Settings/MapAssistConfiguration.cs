@@ -52,6 +52,9 @@ namespace MapAssist.Settings
         [YamlMember(Alias = "GameInfo", ApplyNamingConventions = false)]
         public GameInfoConfiguration GameInfo { get; set; }
 
+        [YamlMember(Alias = "Portraits", ApplyNamingConventions = false)]
+        public PortraitsConfiguration Portraits { get; set; }
+
         [YamlMember(Alias = "D2Path", ApplyNamingConventions = false)]
         public string D2LoDPath { get; set; }
 
@@ -409,4 +412,40 @@ public class ItemLogConfiguration
 
     [YamlMember(Alias = "CraftedColor", ApplyNamingConventions = false)]
     public Color CraftedColor { get; set; }
+}
+
+public class PortraitsConfiguration
+{
+    [YamlMember(Alias = "ShowArea", ApplyNamingConventions = false)]
+    public bool ShowArea { get; set; }
+
+    [YamlMember(Alias = "ShowAreaLevel", ApplyNamingConventions = false)]
+    public bool ShowAreaLevel { get; set; }
+
+    [YamlMember(Alias = "ShowPlayerLevel", ApplyNamingConventions = false)]
+    public bool ShowPlayerLevel { get; set; }
+
+    [YamlMember(Alias = "Area", ApplyNamingConventions = false)]
+    public PortraitsRendering Area { get; set; }
+
+    [YamlMember(Alias = "PlayerLevel", ApplyNamingConventions = false)]
+    public PortraitsRendering PlayerLevel { get; set; }
+}
+
+public class PortraitsRendering
+{
+    [YamlMember(Alias = "Font", ApplyNamingConventions = false)]
+    public string Font { get; set; }
+
+    [YamlMember(Alias = "FontSize", ApplyNamingConventions = false)]
+    public double FontSize { get; set; }
+
+    [YamlMember(Alias = "Opacity", ApplyNamingConventions = false)]
+    public float Opacity { get; set; }
+
+    [YamlMember(Alias = "TextColor", ApplyNamingConventions = false)]
+    public Color TextColor { get; set; }
+
+    [YamlMember(Alias = "TextShadow", ApplyNamingConventions = false)]
+    public bool TextShadow { get; set; }
 }

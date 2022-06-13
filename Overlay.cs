@@ -119,6 +119,7 @@ namespace MapAssist
                             }
 
                             _compositor.DrawPlayerInfo(gfx);
+                            _compositor.DrawPortraitsInfo(gfx);
 
                             var gameInfoAnchor = GameInfoAnchor(MapAssistConfiguration.Loaded.GameInfo.Position);
                             var nextAnchor = _compositor.DrawGameInfo(gfx, gameInfoAnchor, e, errorLoadingAreaData);
