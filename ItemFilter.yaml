@@ -125,6 +125,7 @@ Wire Fleece:
 Monarch:
   - Qualities: magic # Unid Magic Monarch
     Min Area Level: 67
+    CheckVendor: false
     PlaySoundOnDrop: false
   - Qualities: [normal, superior] # Runeword Base >> Dream, Dragon, Sanctuary, Phoenix, Spirit
     Sockets: [0, 3, 4]
@@ -136,10 +137,12 @@ Monarch:
     Ethereal: false
     Sockets: [4]
     Faster Block Rate: 30
+  - Qualities: unique # Stormshield
 
 Ward:
   - Qualities: magic # Unid Magic Ward
     Min Area Level: 67
+    CheckVendor: false
     PlaySoundOnDrop: false
   - Qualities: magic # Jeweler's Ward >> 4os, 30 FBR
     Ethereal: false
@@ -150,6 +153,9 @@ Troll Nest:
   - Qualities: [normal, superior] # Runeword Base >> Dream
     Sockets: [3]
     Ethereal: false
+
+Round Shield:
+  - Qualities: unique # Moser's Blessed Circle'
 
 #### Gloves #####################################
 Gloves:
@@ -307,18 +313,18 @@ Druid Helms:
   - Tiers: elite # Unid Rare Druid Pelt
     Qualities: rare
     Ethereal: false
-  - Tiers: [exceptional, elite] # Runeword Base >> Delerium, Flicking Flame >> +1 Tornado
+  - Tiers: [exceptional, elite] # Runeword Base >> Delerium, Flicking Flame >> +2 Tornado
     Qualities: [normal, superior]
     Ethereal: false
     Sockets: [3]
     Skills:
-      Tornado: 1
-  - Tiers: [exceptional, elite] # Runeword Base >> Delerium, Flicking Flame  >> +1 Hurricane
+      Tornado: 2
+  - Tiers: [exceptional, elite] # Runeword Base >> Delerium, Flicking Flame  >> +2 Hurricane
     Qualities: [normal, superior]
     Ethereal: false
     Sockets: [3]
     Skills:
-      Hurricane: 1
+      Hurricane: 2
   - Tiers: [exceptional, elite] # Rare Druid Pelt >> 2os, +2 Tornado
     Qualities: rare
     Ethereal: false
@@ -456,7 +462,6 @@ Berserker Axe:
 
 Ettin Axe:
   - Qualities: unique # Rune Master
-    Ethereal: true
 
 #### Bows #######################################
 Bows:
@@ -499,11 +504,11 @@ Hydra Bow:
     Sockets: [0, 6]
     Enhanced Damage: 10
 
-Ward Bow:
-  - Qualities: unique # Widowmaker
+#Ward Bow:
+#  - Qualities: unique # Widowmaker
 
-Short Siege Bow:
-  - Qualities: unique # Witchwild String
+#Short Siege Bow:
+#  - Qualities: unique # Witchwild String
 
 #### Crossbows ##################################
 Colossus Crossbow:
@@ -535,8 +540,8 @@ Ceremonial Javelin:
 
 #### Maces ######################################
 Flail:
-  - Qualities: [normal, superior] # Runeword Base >> Heart of the Oak, Call to Arms
-    Sockets: [4, 5]
+  #- Qualities: [normal, superior] # Runeword Base >> Heart of the Oak, Call to Arms
+  #  Sockets: [4, 5]
   - Qualities: superior # Runeword Base >> Black
     Sockets: [3]
     Enhanced Damage: 10
@@ -664,8 +669,8 @@ Archon Staff:
 
 #### Swords #####################################
 Crystal Sword:
-  - Qualities: [normal, superior] # Runeword Base >> Spirit, Call to Arms
-    Sockets: [4, 5]
+  #- Qualities: [normal, superior] # Runeword Base >> Spirit, Call to Arms
+  #  Sockets: [4, 5]
   - Qualities: magic # Magic Crystal Sword >> +3 Barb Warcries >> Shop: [H]Ormus
     Class Skill Tree:
       Barbarian Warcries: 3
@@ -683,6 +688,7 @@ Giant Sword:
 Phase Blade:
   - Qualities: [magic, rare] # Unid Magic/Rare Phase
     Min Area Level: 67
+    CheckVendor: false
     PlaySoundOnDrop: false
   - Qualities: [magic, rare] # Magic/Rare Phase >> 4os
     Sockets: [4]
@@ -729,6 +735,9 @@ Colossus Blade:
     Sockets: [5, 6]
   - Qualities: set # Bul-Kathos' Sacred Charge
   - Qualities: unique # The Grandfather
+
+Tulwar:
+  - Qualities: unique # Blade of Ali Baba
 
 #### Throwing ###################################
 Throwing Knifes: # TODO: Fix spelling
@@ -795,6 +804,15 @@ Assassin Katars:
   - Qualities: [magic, rare] # Magic/Rare Claw >> +4 LS Claws
     Skills:
       Lightning Sentry: 4
+  - Qualities: [magic, rare] # Magic/Rare Claw >> +4 DS Claws
+    Skills:
+      Death Sentry: 4
+  - Qualities: [magic, rare] # Magic/Rare Claw >> +4 WoF Claws
+    Skills:
+      Wake of Fire: 4
+  - Qualities: [magic, rare] # Magic/Rare Claw >> +4 FB Claws
+    Skills:
+      Fire Blast: 4
   - Qualities: [normal, superior] # Runeword Base >> Chaos, Fury
     Sockets: [0, 3]
     Skills:
@@ -829,24 +847,28 @@ Assassin Katars:
 Greater Claws:
   - Qualities: [magic, rare] # Unid Magic/Rare Claws
     Min Area Level: 67
+    CheckVendor: false
     Ethereal: false
     PlaySoundOnDrop: false
 
 Greater Talons:
   - Qualities: [magic, rare] # Unid Magic/Rare Claws
     Min Area Level: 67
+    CheckVendor: false
     Ethereal: false
     PlaySoundOnDrop: false
 
 Feral Claws:
   - Qualities: [magic, rare] # Unid Magic/Rare Claws
     Min Area Level: 67
+    CheckVendor: false
     Ethereal: false
     PlaySoundOnDrop: false
 
 Runic Talons:
   - Qualities: [magic, rare] # Unid Magic/Rare Claws
     Min Area Level: 67
+    CheckVendor: false
     Ethereal: false
     PlaySoundOnDrop: false
 
@@ -864,6 +886,7 @@ Swirling Crystal:
 Circlets:
   - Qualities: [magic, rare] # Unid Magic/Rare Circlet
     Min Area Level: 67
+    CheckVendor: false
     PlaySoundOnDrop: false
   - Qualities: superior # Runeword Base >> Dream
     Sockets: [3]
