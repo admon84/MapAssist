@@ -1,4 +1,8 @@
-﻿namespace MapAssist.Types
+﻿using MapAssist.Helpers;
+using MapAssist.Settings;
+using System.Collections.Generic;
+
+namespace MapAssist.Types
 {
     public enum GameObject
     {
@@ -579,4 +583,30 @@
         GoodChest = 580,
         NotSoGoodChest = 581
     };
+
+    public static class GameObjects
+    {
+        public static Dictionary<string, LocalizedObj> LocalizedObjects = new Dictionary<string, LocalizedObj>();
+
+        public static string NameFromKey(string key)
+        {
+            if (!LocalizedObjects.TryGetValue(key, out LocalizedObj localItem))
+            {
+                return key;
+            }
+
+            var lang = MapAssistConfiguration.Loaded.LanguageCode;
+            return localItem.GetType().GetProperty(lang.ToString()).GetValue(localItem, null).ToString();
+        }
+    }
+
+    public static class GameObjectExtensions
+    {
+        public static string Name(this UnitObject obj)
+        {
+            if (obj.IsShrine) return Shrine.ShrineDisplayName(obj);
+
+            return GameObjects.NameFromKey(obj.ObjectType);
+        }
+    }
 }

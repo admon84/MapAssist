@@ -617,20 +617,12 @@ namespace MapAssist.Helpers
                                 ? MapAssistConfiguration.Loaded.MapConfiguration.Player
                                 : MapAssistConfiguration.Loaded.MapConfiguration.PartyPlayer;
 
-                            var canDrawThisIcon = myPlayer
-                                ? canDrawIcon
-                                : MapAssistConfiguration.Loaded.MapConfiguration.PartyPlayer.CanDrawIcon();
-
-                            if (canDrawThisIcon)
+                            if (rendering.CanDrawIcon())
                             {
                                 drawPlayerIcons.Add((rendering, playerUnit.Position));
                             }
 
-                            var canDrawThisLabel = myPlayer
-                                ? canDrawLabel
-                                : MapAssistConfiguration.Loaded.MapConfiguration.PartyPlayer.CanDrawLabel();
-
-                            if (canDrawThisLabel && !myPlayer)
+                            if (rendering.CanDrawLabel() && !myPlayer)
                             {
                                 drawPlayerLabels.Add((rendering, playerUnit.Position, playerName, rendering.LabelColor));
                             }
@@ -638,11 +630,11 @@ namespace MapAssist.Helpers
                         else
                         {
                             // not in my party
-                            var rendering = (myPlayer
+                            var rendering = myPlayer
                                 ? MapAssistConfiguration.Loaded.MapConfiguration.Player
                                 : (!playerUnit.IsCorpse && (playerUnit.RosterEntry.IsHostile || playerUnit.RosterEntry.IsHostileTo)
                                     ? MapAssistConfiguration.Loaded.MapConfiguration.HostilePlayer
-                                    : MapAssistConfiguration.Loaded.MapConfiguration.NonPartyPlayer));
+                                    : MapAssistConfiguration.Loaded.MapConfiguration.NonPartyPlayer);
 
                             if (rendering.CanDrawIcon())
                             {
@@ -954,6 +946,8 @@ namespace MapAssist.Helpers
             var textAlign = MapAssistConfiguration.Loaded.GameInfo.Position == GameInfoPosition.TopRight ? TextAlign.Right : TextAlign.Left;
             var textColor = Color.FromArgb(199, 179, 119);
 
+            var now = DateTime.Now;
+
             void DrawGameInfoText(string text)
             {
                 DrawText(gfx, anchor, text, font, fontSize, textColor, textShadow, textAlign);
@@ -974,7 +968,7 @@ namespace MapAssist.Helpers
             // Game Timer
             if (MapAssistConfiguration.Loaded.GameInfo.ShowGameTimer)
             {
-                DrawGameInfoText("Game Time: " + _gameData.Session.GameTimerDisplay);
+                DrawGameInfoText("Game Time: " + _gameData.Session.GameStartTimeDisplay(now));
             }
 
             // Area
@@ -1002,7 +996,7 @@ namespace MapAssist.Helpers
             // Area Timer
             if (MapAssistConfiguration.Loaded.GameInfo.ShowAreaTimer)
             {
-                DrawGameInfoText("Area Time: " + _gameData.Session.AreaTimerDisplay);
+                DrawGameInfoText("Area Time: " + _gameData.Session.AreaTimeDisplay(_gameData.PlayerUnit.UnitId, now));
             }
 
             // Overlay FPS

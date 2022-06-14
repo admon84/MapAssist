@@ -7,61 +7,113 @@ namespace MapAssist.Helpers
 {
     public static class Localization
     {
-        public static LocalizationFileObj _localization;
+        public static List<LocalizedObj> _itemNames;
+        public static List<LocalizedObj> _itemRunes;
+        public static List<LocalizedObj> _levels;
+        public static List<LocalizedObj> _monsters;
+        public static List<LocalizedObj> _npcs;
+        public static List<LocalizedObj> _objects;
+        public static List<LocalizedObj> _shrines;
 
-        public static void LoadLocalizationFile()
+        public static void LoadLocalizationData()
         {
-            var resString = Properties.Resources.Localization;
+            LoadItemNames();
+            LoadItemRunes();
+            LoadLevels();
+            LoadMonsters();
+            LoadNpcs();
+            LoadShrines();
+            LoadObjects();
+        }
 
+        private static void LoadItemNames()
+        {
+            _itemNames = LoadObjectsFromResource(Properties.Resources.ItemNames);
+
+            foreach (var item in _itemNames)
+            {
+                Items.LocalizedItems.Add(item.Key, item);
+            }
+        }
+
+        private static void LoadItemRunes()
+        {
+            _itemRunes = LoadObjectsFromResource(Properties.Resources.ItemRunes);
+
+            foreach (var item in _itemRunes)
+            {
+                if (item.Key.StartsWith("Runeword"))
+                {
+                    Items.LocalizedRunewords.Add((ushort)item.ID, item);
+                }
+                else
+                {
+                    Items.LocalizedRunes.Add(item.Key, item);
+                }
+            }
+        }
+
+        private static void LoadLevels()
+        {
+            _levels = LoadObjectsFromResource(Properties.Resources.Levels);
+
+            foreach (var item in _levels)
+            {
+                AreaExtensions.LocalizedAreas.Add(item.Key, item);
+            }
+        }
+
+        private static void LoadMonsters()
+        {
+            _monsters = LoadObjectsFromResource(Properties.Resources.Monsters);
+
+            foreach (var item in _monsters)
+            {
+                NpcExtensions.LocalizedNpcs.Add(item.Key, item);
+            }
+        }
+
+        private static void LoadNpcs()
+        {
+            _npcs = LoadObjectsFromResource(Properties.Resources.Npcs);
+
+            foreach (var item in _npcs)
+            {
+                NpcExtensions.LocalizedNpcs.Add(item.Key, item);
+            }
+        }
+
+        private static void LoadShrines()
+        {
+            _shrines = LoadObjectsFromResource(Properties.Resources.Shrines);
+
+            foreach (var item in _shrines)
+            {
+                Shrine.LocalizedShrines.Add(item.Key, item);
+            }
+        }
+
+        private static void LoadObjects()
+        {
+            _objects = LoadObjectsFromResource(Properties.Resources.Objects);
+
+            foreach (var item in _objects)
+            {
+                GameObjects.LocalizedObjects.Add(item.Key, item);
+            }
+        }
+
+        private static List<LocalizedObj> LoadObjectsFromResource(byte[] resString)
+        {
             using (var Stream = new MemoryStream(resString))
             {
                 using (var streamReader = new StreamReader(Stream))
                 {
                     var jsonString = streamReader.ReadToEnd();
-                    _localization = JsonConvert.DeserializeObject<LocalizationFileObj>(jsonString);
+                    return JsonConvert.DeserializeObject<List<LocalizedObj>>(jsonString);
                 }
             }
-
-            foreach (var item in _localization.Areas)
-            {
-                AreaExtensions.LocalizedAreas.Add(item.Key, item);
-            }
-
-            foreach (var item in _localization.Items)
-            {
-                Items.LocalizedItems.Add(item.Key, item);
-            }
-
-            foreach (var item in _localization.Runewords)
-            {
-                Items.LocalizedRunewords.Add((ushort)item.ID, item);
-            }
-
-            foreach (var item in _localization.Npcs)
-            {
-                NpcExtensions.LocalizedNpcs.Add(item.Key, item);
-            }
-
-            foreach (var item in _localization.Monsters)
-            {
-                NpcExtensions.LocalizedNpcs.Add(item.Key, item);
-            }
-
-            foreach (var item in _localization.Shrines)
-            {
-                Shrine.LocalizedShrines.Add(item.Key, item);
-            }
         }
-    }
-
-    public class LocalizationFileObj
-    {
-        public List<LocalizedObj> Areas = new List<LocalizedObj>();
-        public List<LocalizedObj> Items = new List<LocalizedObj>();
-        public List<LocalizedObj> Npcs = new List<LocalizedObj>();
-        public List<LocalizedObj> Shrines = new List<LocalizedObj>();
-        public List<LocalizedObj> Monsters = new List<LocalizedObj>();
-        public List<LocalizedObj> Runewords = new List<LocalizedObj>();
     }
 
     public class LocalizedObj
