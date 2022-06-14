@@ -39,21 +39,16 @@ namespace MapAssist.Types
         {
             if (obj.IsWell)
             {
-                return WellDisplayName();
+                return GameObjects.Name(obj);
             }
 
-            var shrineId = obj.ObjectData.InteractType;
-            var itemCode = $"ShrId{shrineId}";
-
-            LocalizedObj localItem;
-            if (!LocalizedShrines.TryGetValue(itemCode, out localItem))
+            if (!LocalizedShrines.TryGetValue($"ShrId{obj.ObjectData.InteractType}", out LocalizedObj localItem))
             {
                 return "Shrine";
             }
 
             var lang = MapAssistConfiguration.Loaded.LanguageCode;
-            var prop = localItem.GetType().GetProperty(lang.ToString()).GetValue(localItem, null);
-            var label = prop.ToString();
+            var label = localItem.GetType().GetProperty(lang.ToString()).GetValue(localItem, null).ToString();
 
             if (lang == Locale.enUS)
             {
@@ -65,20 +60,6 @@ namespace MapAssist.Types
             }
 
             return label;
-        }
-
-        public static string WellDisplayName()
-        {
-            var itemCode = "Well";
-            LocalizedObj localItem;
-            if (!LocalizedShrines.TryGetValue(itemCode, out localItem))
-            {
-                return itemCode;
-            }
-
-            var lang = MapAssistConfiguration.Loaded.LanguageCode;
-            var prop = localItem.GetType().GetProperty(lang.ToString()).GetValue(localItem, null);
-            return prop.ToString();
         }
     }
 }

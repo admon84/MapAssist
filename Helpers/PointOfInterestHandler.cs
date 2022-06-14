@@ -111,32 +111,32 @@ namespace MapAssist.Helpers
             {
                 [GameObject.CairnStoneAlpha] = Area.Tristram.Name(),
                 [GameObject.WirtCorpse] = Items.GetItemNameFromKey("leg"),
-                [GameObject.InifussTree] = Items.GetItemNameFromKey("Inifuss"),
+                [GameObject.InifussTree] = GameObjects.NameFromKey("Inifuss"),
                 [GameObject.Malus] = Items.GetItemNameFromKey("Malus"),
                 [GameObject.HoradricScrollChest] = Items.GetItemNameFromKey("tr1"),
                 [GameObject.HoradricCubeChest] = Items.GetItemNameFromKey("box"),
                 [GameObject.StaffOfKingsChest] = Items.GetItemNameFromKey("Staff of Kings"),
-                [GameObject.YetAnotherTome] = AreaExtensions.NameFromKey("The Summoner"),
+                [GameObject.YetAnotherTome] = NpcExtensions.LocalizedName("The Summoner"),
                 [GameObject.HoradricOrifice] = Items.GetItemNameFromKey("orifice"),
                 [GameObject.KhalimChest1] = Items.GetItemNameFromKey("qhr"),
                 [GameObject.KhalimChest2] = Items.GetItemNameFromKey("qbr"),
                 [GameObject.KhalimChest3] = Items.GetItemNameFromKey("qey"),
                 [GameObject.LamEsensTome] = Items.GetItemNameFromKey("bbb"),
                 [GameObject.GidbinnAltarDecoy] = Items.GetItemNameFromKey("gidbinn"),
-                [GameObject.HellForge] = Items.GetItemNameFromKey("Hellforge"),
-                [GameObject.DrehyaWildernessStartPosition] = AreaExtensions.NameFromKey("Drehya"), //anya
-                [GameObject.NihlathakWildernessStartPosition] = AreaExtensions.NameFromKey("Nihlathak"),
-                [GameObject.CagedWussie] = AreaExtensions.NameFromKey("cagedwussie1"),
+                [GameObject.HellForge] = GameObjects.NameFromKey("Hellforge"),
+                [GameObject.DrehyaWildernessStartPosition] = NpcExtensions.LocalizedName("Drehya"), //anya
+                [GameObject.NihlathakWildernessStartPosition] = NpcExtensions.LocalizedName("Nihlathak"),
+                [GameObject.CagedWussie] = GameObjects.NameFromKey("cagedwussie1"),
             };
             AreaSpecificQuestObjects = new Dictionary<Area, Dictionary<GameObject, string>>()
             {
                 [Area.MatronsDen] = new Dictionary<GameObject, string>()
                 {
-                    [GameObject.SparklyChest] = AreaExtensions.NameFromKey("Lilith"),
+                    [GameObject.SparklyChest] = NpcExtensions.LocalizedName("Lilith"),
                 },
                 [Area.FurnaceOfPain] = new Dictionary<GameObject, string>()
                 {
-                    [GameObject.SparklyChest] = AreaExtensions.NameFromKey("Izual"),
+                    [GameObject.SparklyChest] = NpcExtensions.LocalizedName("Izual"),
                 },
                 [Area.PalaceCellarLevel3] = new Dictionary<GameObject, string>()
                 {

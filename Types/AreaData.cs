@@ -99,7 +99,7 @@ namespace MapAssist.Types
 
     class AreaLabel
     {
-        public string Text;
+        public string Key;
         public int[] Level;
     }
 }

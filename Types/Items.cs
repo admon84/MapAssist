@@ -19,6 +19,7 @@ namespace MapAssist.Types
         public static Dictionary<int, Dictionary<uint, Npc>> ItemVendors = new Dictionary<int, Dictionary<uint, Npc>>();
         public static Dictionary<int, List<ItemLogEntry>> ItemLog = new Dictionary<int, List<ItemLogEntry>>();
         public static Dictionary<string, LocalizedObj> LocalizedItems = new Dictionary<string, LocalizedObj>();
+        public static Dictionary<string, LocalizedObj> LocalizedRunes = new Dictionary<string, LocalizedObj>();
         public static Dictionary<ushort, LocalizedObj> LocalizedRunewords = new Dictionary<ushort, LocalizedObj>();
         public static Dictionary<string, QualityLevelsObj> QualityLevels = new Dictionary<string, QualityLevelsObj>();
 
@@ -365,7 +366,10 @@ namespace MapAssist.Types
             LocalizedObj localItem;
             if (!LocalizedItems.TryGetValue(itemCode, out localItem))
             {
-                return "ItemNotFound";
+                if (!LocalizedRunes.TryGetValue(itemCode, out localItem))
+                {
+                    return "ItemNotFound";
+                }
             }
 
             var lang = MapAssistConfiguration.Loaded.LanguageCode;

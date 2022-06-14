@@ -271,15 +271,19 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\Localization.json" />
+    <EmbeddedResource Include="Resources\Data\QualityLevels.json" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\QualityLevels.json" />
+    <EmbeddedResource Include="Resources\Data\SuperUniques.txt" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\SuperUniques.txt" />
-  </ItemGroup>
-  <ItemGroup>
+    <None Include="Resources\Data\item-names.json" />
+    <None Include="Resources\Data\item-runes.json" />
+    <None Include="Resources\Data\levels.json" />
+    <None Include="Resources\Data\monsters.json" />
+    <None Include="Resources\Data\npcs.json" />
+    <None Include="Resources\Data\objects.json" />
+    <None Include="Resources\Data\shrines.json" />
     <None Include="Resources\Skills\Salvation.png" />
   </ItemGroup>
   <ItemGroup>
