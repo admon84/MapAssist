@@ -28,14 +28,7 @@ namespace MapAssist.Helpers
 
         private static void LoadItemNames()
         {
-            using (var Stream = new MemoryStream(Properties.Resources.ItemNames))
-            {
-                using (var streamReader = new StreamReader(Stream))
-                {
-                    var jsonString = streamReader.ReadToEnd();
-                    _itemNames = JsonConvert.DeserializeObject<List<LocalizedObj>>(jsonString);
-                }
-            }
+            LoadObjectsFromResource(Properties.Resources.ItemNames, ref _itemNames);
 
             foreach (var item in _itemNames)
             {
@@ -45,14 +38,7 @@ namespace MapAssist.Helpers
 
         private static void LoadItemRunes()
         {
-            using (var Stream = new MemoryStream(Properties.Resources.ItemRunes))
-            {
-                using (var streamReader = new StreamReader(Stream))
-                {
-                    var jsonString = streamReader.ReadToEnd();
-                    _itemRunes = JsonConvert.DeserializeObject<List<LocalizedObj>>(jsonString);
-                }
-            }
+            LoadObjectsFromResource(Properties.Resources.ItemRunes, ref _itemRunes);
 
             foreach (var item in _itemRunes)
             {
@@ -69,14 +55,7 @@ namespace MapAssist.Helpers
 
         private static void LoadLevels()
         {
-            using (var Stream = new MemoryStream(Properties.Resources.Levels))
-            {
-                using (var streamReader = new StreamReader(Stream))
-                {
-                    var jsonString = streamReader.ReadToEnd();
-                    _levels = JsonConvert.DeserializeObject<List<LocalizedObj>>(jsonString);
-                }
-            }
+            LoadObjectsFromResource(Properties.Resources.Levels, ref _levels);
 
             foreach (var item in _levels)
             {
@@ -86,14 +65,7 @@ namespace MapAssist.Helpers
 
         private static void LoadMonsters()
         {
-            using (var Stream = new MemoryStream(Properties.Resources.Monsters))
-            {
-                using (var streamReader = new StreamReader(Stream))
-                {
-                    var jsonString = streamReader.ReadToEnd();
-                    _monsters = JsonConvert.DeserializeObject<List<LocalizedObj>>(jsonString);
-                }
-            }
+            LoadObjectsFromResource(Properties.Resources.Monsters, ref _monsters);
 
             foreach (var item in _monsters)
             {
@@ -103,14 +75,7 @@ namespace MapAssist.Helpers
 
         private static void LoadNpcs()
         {
-            using (var Stream = new MemoryStream(Properties.Resources.Npcs))
-            {
-                using (var streamReader = new StreamReader(Stream))
-                {
-                    var jsonString = streamReader.ReadToEnd();
-                    _npcs = JsonConvert.DeserializeObject<List<LocalizedObj>>(jsonString);
-                }
-            }
+            LoadObjectsFromResource(Properties.Resources.Npcs, ref _npcs);
 
             foreach (var item in _npcs)
             {
@@ -120,14 +85,7 @@ namespace MapAssist.Helpers
 
         private static void LoadShrines()
         {
-            using (var Stream = new MemoryStream(Properties.Resources.Shrines))
-            {
-                using (var streamReader = new StreamReader(Stream))
-                {
-                    var jsonString = streamReader.ReadToEnd();
-                    _shrines = JsonConvert.DeserializeObject<List<LocalizedObj>>(jsonString);
-                }
-            }
+            LoadObjectsFromResource(Properties.Resources.Shrines, ref _shrines);
 
             foreach (var item in _shrines)
             {
@@ -137,18 +95,23 @@ namespace MapAssist.Helpers
 
         private static void LoadObjects()
         {
-            using (var Stream = new MemoryStream(Properties.Resources.Objects))
-            {
-                using (var streamReader = new StreamReader(Stream))
-                {
-                    var jsonString = streamReader.ReadToEnd();
-                    _objects = JsonConvert.DeserializeObject<List<LocalizedObj>>(jsonString);
-                }
-            }
+            LoadObjectsFromResource(Properties.Resources.Objects, ref _objects);
 
             foreach (var item in _objects)
             {
                 GameObjects.LocalizedObjects.Add(item.Key, item);
+            }
+        }
+
+        private static void LoadObjectsFromResource(byte[] resource, ref List<LocalizedObj> data)
+        {
+            using (var Stream = new MemoryStream(resource))
+            {
+                using (var streamReader = new StreamReader(Stream))
+                {
+                    var jsonString = streamReader.ReadToEnd();
+                    data = JsonConvert.DeserializeObject<List<LocalizedObj>>(jsonString);
+                }
             }
         }
     }
