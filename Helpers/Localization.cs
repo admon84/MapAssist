@@ -28,7 +28,7 @@ namespace MapAssist.Helpers
 
         private static void LoadItemNames()
         {
-            LoadObjectsFromResource(Properties.Resources.ItemNames, ref _itemNames);
+            _itemNames = LoadObjectsFromResource(Properties.Resources.ItemNames);
 
             foreach (var item in _itemNames)
             {
@@ -38,7 +38,7 @@ namespace MapAssist.Helpers
 
         private static void LoadItemRunes()
         {
-            LoadObjectsFromResource(Properties.Resources.ItemRunes, ref _itemRunes);
+            _itemRunes = LoadObjectsFromResource(Properties.Resources.ItemRunes);
 
             foreach (var item in _itemRunes)
             {
@@ -55,7 +55,7 @@ namespace MapAssist.Helpers
 
         private static void LoadLevels()
         {
-            LoadObjectsFromResource(Properties.Resources.Levels, ref _levels);
+            _levels = LoadObjectsFromResource(Properties.Resources.Levels);
 
             foreach (var item in _levels)
             {
@@ -65,7 +65,7 @@ namespace MapAssist.Helpers
 
         private static void LoadMonsters()
         {
-            LoadObjectsFromResource(Properties.Resources.Monsters, ref _monsters);
+            _monsters = LoadObjectsFromResource(Properties.Resources.Monsters);
 
             foreach (var item in _monsters)
             {
@@ -75,7 +75,7 @@ namespace MapAssist.Helpers
 
         private static void LoadNpcs()
         {
-            LoadObjectsFromResource(Properties.Resources.Npcs, ref _npcs);
+            _npcs = LoadObjectsFromResource(Properties.Resources.Npcs);
 
             foreach (var item in _npcs)
             {
@@ -85,7 +85,7 @@ namespace MapAssist.Helpers
 
         private static void LoadShrines()
         {
-            LoadObjectsFromResource(Properties.Resources.Shrines, ref _shrines);
+            _shrines = LoadObjectsFromResource(Properties.Resources.Shrines);
 
             foreach (var item in _shrines)
             {
@@ -95,7 +95,7 @@ namespace MapAssist.Helpers
 
         private static void LoadObjects()
         {
-            LoadObjectsFromResource(Properties.Resources.Objects, ref _objects);
+            _objects = LoadObjectsFromResource(Properties.Resources.Objects);
 
             foreach (var item in _objects)
             {
@@ -103,14 +103,14 @@ namespace MapAssist.Helpers
             }
         }
 
-        private static void LoadObjectsFromResource(byte[] resource, ref List<LocalizedObj> data)
+        private static List<LocalizedObj> LoadObjectsFromResource(byte[] resString)
         {
-            using (var Stream = new MemoryStream(resource))
+            using (var Stream = new MemoryStream(resString))
             {
                 using (var streamReader = new StreamReader(Stream))
                 {
                     var jsonString = streamReader.ReadToEnd();
-                    data = JsonConvert.DeserializeObject<List<LocalizedObj>>(jsonString);
+                    return JsonConvert.DeserializeObject<List<LocalizedObj>>(jsonString);
                 }
             }
         }
