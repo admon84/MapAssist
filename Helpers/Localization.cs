@@ -56,8 +56,14 @@ namespace MapAssist.Helpers
 
             foreach (var item in _itemRunes)
             {
-                Items.LocalizedRunes.Add(item.Key, item);
-                Items.LocalizedRunewords.Add((ushort)item.ID, item);
+                if (item.Key.StartsWith("Runeword"))
+                {
+                    Items.LocalizedRunewords.Add((ushort)item.ID, item);
+                }
+                else
+                {
+                    Items.LocalizedRunes.Add(item.Key, item);
+                }
             }
         }
 
