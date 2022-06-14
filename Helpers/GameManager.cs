@@ -16,10 +16,12 @@ namespace MapAssist.Helpers
         private static IntPtr _winHook;
         private static int _foregroundProcessId = 0;
 
-        private static IntPtr _lastGameHwnd = IntPtr.Zero;
-        private static Process _lastGameProcess;
-        private static int _lastGameProcessId = 0;
-        private static ProcessContext _processContext;
+        public static IntPtr MainWindowHandle { get; private set; } = IntPtr.Zero;
+        private static Process LastGameProcess { get; set; }
+        private static int LastGameProcessId { get; set; }
+        public static DateTime LastGameProcessForegroundTime { get; private set; } = DateTime.MinValue;
+        private static ProcessContext ProcessContext { get; set; }
+        public static bool IsGameInForeground { get => LastGameProcessId == _foregroundProcessId; }
 
         public delegate void StatusUpdateHandler(object sender, EventArgs e);
 
@@ -51,6 +53,8 @@ namespace MapAssist.Helpers
 
         private static void SetActiveWindow(IntPtr hwnd)
         {
+            LastGameProcessForegroundTime = DateTime.Now;
+
             if (!WindowsExternal.HandleExists(hwnd)) // Handle doesn't exist
             {
                 _log.Info($"Active window changed to another process (handle: {hwnd})");
@@ -61,7 +65,7 @@ namespace MapAssist.Helpers
 
             _foregroundProcessId = (int)processId;
 
-            if (_lastGameProcessId == _foregroundProcessId) // Process is the last found valid game process
+            if (LastGameProcessId == _foregroundProcessId) // Process is the last found valid game process
             {
                 _log.Info($"Active window changed to last game process (handle: {hwnd})");
                 return;
@@ -121,9 +125,9 @@ namespace MapAssist.Helpers
             // is a new game process
             _log.Info($"Active window changed to a game window (handle: {hwnd})");
 
-            _lastGameHwnd = hwnd;
-            _lastGameProcess = process;
-            _lastGameProcessId = _foregroundProcessId;
+            MainWindowHandle = hwnd;
+            LastGameProcess = process;
+            LastGameProcessId = _foregroundProcessId;
 
             if (!_UnitHashTableOffset.ContainsKey(process.Id)) _UnitHashTableOffset[process.Id] = IntPtr.Zero;
             if (!_ExpansionCheckOffset.ContainsKey(process.Id)) _ExpansionCheckOffset[process.Id] = IntPtr.Zero;
@@ -137,15 +141,15 @@ namespace MapAssist.Helpers
 
         public static ProcessContext GetProcessContext()
         {
-            if (_processContext != null && _processContext.OpenContextCount > 0)
+            if (ProcessContext != null && ProcessContext.OpenContextCount > 0)
             {
-                _processContext.OpenContextCount += 1;
-                return _processContext;
+                ProcessContext.OpenContextCount += 1;
+                return ProcessContext;
             }
-            else if (_lastGameProcess != null && WindowsExternal.HandleExists(_lastGameHwnd))
+            else if (LastGameProcess != null && WindowsExternal.HandleExists(MainWindowHandle))
             {
-                _processContext = new ProcessContext(_lastGameProcess); // Rarely, the VirtualMemoryRead will cause an error, in that case return a null instead of a runtime error. The next frame will try again.
-                return _processContext;
+                ProcessContext = new ProcessContext(LastGameProcess); // Rarely, the VirtualMemoryRead will cause an error, in that case return a null instead of a runtime error. The next frame will try again.
+                return ProcessContext;
             }
 
             return null;
@@ -155,18 +159,16 @@ namespace MapAssist.Helpers
         {
             if (MapAssistConfiguration.Loaded.RenderingConfiguration.StickToLastGameWindow) return;
 
-            if (_processContext != null && _processContext.OpenContextCount == 0 && _lastGameProcess != null) // Prevent disposing the process when the context is open
+            if (ProcessContext != null && ProcessContext.OpenContextCount == 0 && LastGameProcess != null) // Prevent disposing the process when the context is open
             {
-                _lastGameProcess.Dispose();
+                LastGameProcess.Dispose();
             }
 
-            _lastGameHwnd = IntPtr.Zero;
-            _lastGameProcess = null;
-            _lastGameProcessId = 0;
+            MainWindowHandle = IntPtr.Zero;
+            LastGameProcessForegroundTime = DateTime.MinValue;
+            LastGameProcess = null;
+            LastGameProcessId = 0;
         }
-
-        public static IntPtr MainWindowHandle { get => _lastGameHwnd; }
-        public static bool IsGameInForeground { get => _lastGameProcessId == _foregroundProcessId; }
 
         public static UnitHashTable UnitHashTable(int offset = 0)
         {
@@ -187,14 +189,14 @@ namespace MapAssist.Helpers
         {
             get
             {
-                if (_ExpansionCheckOffset[_lastGameProcessId] != IntPtr.Zero)
+                if (_ExpansionCheckOffset[LastGameProcessId] != IntPtr.Zero)
                 {
-                    return _ExpansionCheckOffset[_lastGameProcessId];
+                    return _ExpansionCheckOffset[LastGameProcessId];
                 }
 
                 PopulateMissingOffsets();
 
-                return _ExpansionCheckOffset[_lastGameProcessId];
+                return _ExpansionCheckOffset[LastGameProcessId];
             }
         }
 
@@ -202,14 +204,14 @@ namespace MapAssist.Helpers
         {
             get
             {
-                if (_GameNameOffset[_lastGameProcessId] != IntPtr.Zero)
+                if (_GameNameOffset[LastGameProcessId] != IntPtr.Zero)
                 {
-                    return _GameNameOffset[_lastGameProcessId];
+                    return _GameNameOffset[LastGameProcessId];
                 }
 
                 PopulateMissingOffsets();
 
-                return _GameNameOffset[_lastGameProcessId];
+                return _GameNameOffset[LastGameProcessId];
             }
         }
 
@@ -217,14 +219,14 @@ namespace MapAssist.Helpers
         {
             get
             {
-                if (_MenuDataOffset[_lastGameProcessId] != IntPtr.Zero)
+                if (_MenuDataOffset[LastGameProcessId] != IntPtr.Zero)
                 {
-                    return _MenuDataOffset[_lastGameProcessId];
+                    return _MenuDataOffset[LastGameProcessId];
                 }
 
                 PopulateMissingOffsets();
 
-                return _MenuDataOffset[_lastGameProcessId];
+                return _MenuDataOffset[LastGameProcessId];
             }
         }
 
@@ -232,14 +234,14 @@ namespace MapAssist.Helpers
         {
             get
             {
-                if (_RosterDataOffset[_lastGameProcessId] != IntPtr.Zero)
+                if (_RosterDataOffset[LastGameProcessId] != IntPtr.Zero)
                 {
-                    return _RosterDataOffset[_lastGameProcessId];
+                    return _RosterDataOffset[LastGameProcessId];
                 }
 
                 PopulateMissingOffsets();
 
-                return _RosterDataOffset[_lastGameProcessId];
+                return _RosterDataOffset[LastGameProcessId];
             }
         }
 
@@ -247,14 +249,14 @@ namespace MapAssist.Helpers
         {
             get
             {
-                if (_LastHoverDataOffset[_lastGameProcessId] != IntPtr.Zero)
+                if (_LastHoverDataOffset[LastGameProcessId] != IntPtr.Zero)
                 {
-                    return _LastHoverDataOffset[_lastGameProcessId];
+                    return _LastHoverDataOffset[LastGameProcessId];
                 }
 
                 PopulateMissingOffsets();
 
-                return _LastHoverDataOffset[_lastGameProcessId];
+                return _LastHoverDataOffset[LastGameProcessId];
             }
         }
 
@@ -262,14 +264,14 @@ namespace MapAssist.Helpers
         {
             get
             {
-                if (_InteractedNpcOffset[_lastGameProcessId] != IntPtr.Zero)
+                if (_InteractedNpcOffset[LastGameProcessId] != IntPtr.Zero)
                 {
-                    return _InteractedNpcOffset[_lastGameProcessId];
+                    return _InteractedNpcOffset[LastGameProcessId];
                 }
 
                 PopulateMissingOffsets();
 
-                return _InteractedNpcOffset[_lastGameProcessId];
+                return _InteractedNpcOffset[LastGameProcessId];
             }
         }
 
@@ -277,14 +279,14 @@ namespace MapAssist.Helpers
         {
             get
             {
-                if (_PetsOffsetOffset[_lastGameProcessId] != IntPtr.Zero)
+                if (_PetsOffsetOffset[LastGameProcessId] != IntPtr.Zero)
                 {
-                    return _PetsOffsetOffset[_lastGameProcessId];
+                    return _PetsOffsetOffset[LastGameProcessId];
                 }
 
                 PopulateMissingOffsets();
 
-                return _PetsOffsetOffset[_lastGameProcessId];
+                return _PetsOffsetOffset[LastGameProcessId];
             }
         }
 
@@ -349,9 +351,9 @@ namespace MapAssist.Helpers
 
         public static void Dispose()
         {
-            if (_lastGameProcess != null)
+            if (LastGameProcess != null)
             {
-                _lastGameProcess.Dispose();
+                LastGameProcess.Dispose();
             }
             WindowsExternal.UnhookWinEvent(_winHook);
         }

@@ -7,7 +7,7 @@ using MapAssist.Types;
 using System;
 using System.Linq;
 using System.Windows.Forms;
-using Graphics = GameOverlay.Drawing.Graphics;
+using Winook;
 
 namespace MapAssist
 {
@@ -19,12 +19,16 @@ namespace MapAssist
         private GameDataReader _gameDataReader;
         private GameData _gameData;
         private Compositor _compositor = new Compositor();
-        private Point _mouseRelativePos;
         private static ConfigEditor _configEditor;
         private (MapPosition, bool) _lastMapConfiguration;
         private bool _show = true;
         private static readonly object _lock = new object();
         private bool frameDone = true;
+
+        private static int _hookProcessId = 0;
+        private static KeyboardHook _keyboardHook;
+        private static MouseHook _mouseHook;
+        public static Point mouseRelativePos;
 
         public Overlay(ConfigEditor configEditor)
         {
@@ -63,6 +67,8 @@ namespace MapAssist
 
                     var (gameData, areaData, changed) = _gameDataReader.Get();
                     _gameData = gameData;
+
+                    if (gameData != null) InstallHooks(gameData.ProcessId);
 
                     if (changed || _lastMapConfiguration != MapConfiguration())
                     {
@@ -113,8 +119,7 @@ namespace MapAssist
                                     _compositor.DrawGamemap(gfx);
                                     _compositor.DrawOverlay(gfx);
                                 }
-
-                                _compositor.DrawBuffs(gfx, _mouseRelativePos);
+                                _compositor.DrawBuffs(gfx, mouseRelativePos);
                                 _compositor.DrawMonsterBar(gfx);
                             }
 
@@ -153,19 +158,49 @@ namespace MapAssist
             return _gameData != null && _gameData.MainWindowHandle != IntPtr.Zero;
         }
 
-        public void MouseMoveHandler(object sender, MouseEventArgs args)
+        private void InstallHooks(int processId)
         {
-            if (GameManager.IsGameInForeground && InGame())
+            if (_hookProcessId != processId)
             {
-                _mouseRelativePos = new Point(args.X - _window.X, args.Y - _window.Y);
+                _hookProcessId = processId;
+
+                if (_mouseHook != null)
+                {
+                    _mouseHook.Uninstall();
+                    _mouseHook.Dispose();
+                }
+
+                _mouseHook = new MouseHook(processId, MouseMessageTypes.Move);
+                _mouseHook.MessageReceived += MouseHook_MessageReceived;
+                _mouseHook.InstallAsync();
+
+                if (_keyboardHook != null)
+                {
+                    _keyboardHook.Uninstall();
+                    _keyboardHook.Dispose();
+                }
+
+                _keyboardHook = new KeyboardHook(processId);
+                _keyboardHook.MessageReceived += KeyboardHook_MessageReceived;
+                _keyboardHook.InstallAsync();
             }
         }
 
-        public void KeyDownHandler(object sender, KeyEventArgs args)
+        private void MouseHook_MessageReceived(object sender, MouseMessageEventArgs args)
         {
-            if (GameManager.IsGameInForeground && (_gameData == null || !_gameData.MenuOpen.Chat))
+            if (GameManager.IsGameInForeground)
             {
-                var keys = new Hotkey(args.Modifiers, args.KeyCode);
+                mouseRelativePos = new Point(args.X - _window.X, args.Y - _window.Y);
+            }
+        }
+
+        private void KeyboardHook_MessageReceived(object sender, KeyboardMessageEventArgs args)
+        {
+            if (GameManager.IsGameInForeground && (_gameData == null || !_gameData.MenuOpen.Chat)
+                && args.Direction == KeyDirection.Down
+                && DateTime.Now.Subtract(GameManager.LastGameProcessForegroundTime) > TimeSpan.FromMilliseconds(500)) // Enable mouse hooks only shortly after the window gets activated
+            {
+                var keys = new Hotkey((Keys)args.Modifiers, (Keys)args.KeyValue);
 
                 if (InGame())
                 {
@@ -319,6 +354,10 @@ namespace MapAssist
                 if (!disposed)
                 {
                     disposed = true; // This first to let GraphicsWindow.DrawGraphics know to return instantly
+
+                    _mouseHook.Dispose();
+                    _keyboardHook.Dispose();
+
                     _window.Dispose(); // This second to dispose of GraphicsWindow
                     if (_compositor != null) _compositor.Dispose(); // This last so it's disposed after GraphicsWindow stops using it
                 }
