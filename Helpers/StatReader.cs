@@ -62,6 +62,12 @@ namespace MapAssist.Types
                 if (statsInGroup.Length == propertyStatsArgs.Length)
                 {
                     var args = propertyStatsArgs.Select(x => StatArgs(item, player, x[0].stat, x[0].layer, x[0].value)).SelectMany(x => x).ToArray();
+                    
+                    if (formatTextKey.EndsWith("Range") && (int)args[0] == (int)args[1])
+                    {
+                        formatTextKey = formatTextKey.Replace("Range", "");
+                        args = args.Skip(1).ToArray();
+                    }
 
                     var formatText = GetTextFormat(formatTextKey);
                     formatText = new Regex(@"\%\d").Replace(formatText, "$0s");
@@ -507,8 +513,6 @@ namespace MapAssist.Types
             }
             return (0, 0, 0);
         }
-
-        //[Stat.DeadlyStrikePerLevel] = 0.8,
 
         //public static Dictionary<Stat, double> StatDivisors = new Dictionary<Stat, double>()
         //{
