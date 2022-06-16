@@ -348,7 +348,10 @@ namespace MapAssist.Types
             {
                 if (!LocalizedRunes.TryGetValue(itemCode, out localItem))
                 {
-                    return "ItemNotFound";
+                    if (!StatReader.LocalizedStatText.TryGetValue(itemCode, out localItem))
+                    {
+                        return "ItemNotFound";
+                    }
                 }
             }
 
