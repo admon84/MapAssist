@@ -248,7 +248,7 @@ namespace MapAssist.Types
                     var propertyValue = rule.GetType().GetProperty(property.Name).GetValue(rule, null);
                     if (propertyValue == null) continue;
 
-                    var statValue = StatReader.GetStatValue(item, stat);
+                    var statValue = StatReader.GetAdjustedStatValue(stat, StatReader.GetStatValue(item, stat));
                     if (statValue > 0)
                     {
                         itemSuffix += $" ({statValue} {propName})";
