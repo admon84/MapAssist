@@ -1,5 +1,6 @@
 ﻿using MapAssist.Helpers;
 using MapAssist.Settings;
+using MapAssist.Structs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -76,7 +77,7 @@ namespace MapAssist.Types
 
                         args = new object[] { (int)min, (int)max, duration };
                     }
-                    
+
                     if (formatTextKey.EndsWith("Range") && (int)args[0] == (int)args[1])
                     {
                         formatTextKey = formatTextKey.Replace("Range", "");
@@ -129,21 +130,45 @@ namespace MapAssist.Types
 
                         var formatText = isNegative ? propertyStat.DescStrNeg : propertyStat.DescStrPos;
 
-                        if (stat == Stat.ReplenishDurability)
+                        switch (stat)
                         {
-                            args = new object[] { 1 }.Concat(args).ToList();
-                            formatText = "ModStre9u"; // Data file seems wrong, this is actually what's in game
+                            case Stat.ReplenishDurability:
+                                args = new object[] { 1 }.Concat(args).ToList();
+                                formatText = "ModStre9u"; // Data file seems wrong, this is actually what's in game
+                                break;
+
+                            case Stat.AddSkillTab:
+                                var skillTree = (SkillTree)args.FirstOrDefault(x => x is SkillTree);
+                                var skillTreePlayerClass = skillTree.GetPlayerClass();
+
+                                formatText = CharStats[skillTreePlayerClass].StrSkillTabs[skillTree];
+                                break;
+
+                            case Stat.AddClassSkills:
+                                var playerClass = (PlayerClass)args.FirstOrDefault(x => x is PlayerClass);
+
+                                formatText = CharStats[playerClass].StrAllSkills;
+                                break;
                         }
 
                         formatText = GetTextFormat(formatText) + (propertyStat.DescStr2 != null ? " " + GetTextFormat(propertyStat.DescStr2) : "");
                         formatText = new Regex(@"\%\d").Replace(formatText, "$0s");
 
-                        if (stat == Stat.SingleSkill)
+                        switch (stat)
                         {
-                            var skill = (Skill)args.FirstOrDefault(x => x is Skill);
-                            var playerClass = skill.GetPlayerClass();
+                            case Stat.SingleSkill:
+                                var skill = (Skill)args.FirstOrDefault(x => x is Skill);
+                                var skillPlayerClass = skill.GetPlayerClass();
 
-                            args.Add(GetTextFormat($"{playerClass.ToString().Substring(0, 3)}Only"));
+                                args.Add(GetTextFormat(CharStats[skillPlayerClass].StrClassOnly));
+                                break;
+
+                            case Stat.AddSkillTab:
+                                var skillTree = (SkillTree)args.FirstOrDefault(x => x is SkillTree);
+                                var skillTreePlayerClass = skillTree.GetPlayerClass();
+
+                                formatText += " " + GetTextFormat(CharStats[skillTreePlayerClass].StrClassOnly);
+                                break;
                         }
 
                         args = args.Select(x => x.GetType().IsEnum ? x.ToString().AddSpaces() : x).ToList<object>();
@@ -176,7 +201,6 @@ namespace MapAssist.Types
                     var text = CTools.sprintf(formatText, new object[] { numSockets });
                     statsText.Add(text);
                 }
-
                 else if (item.IsEthereal)
                 {
                     var formatText = GetTextFormat("strethereal");
@@ -230,12 +254,12 @@ namespace MapAssist.Types
                 case 13:
                     var (classSkills, classPoints) = GetItemStatAddClassSkills(item, (Structs.PlayerClass)layer, false);
 
-                    return new object[] { classPoints };
+                    return new object[] { classPoints, classSkills[0] };
 
                 case 14:
                     var (skillTrees, skillPoints) = GetItemStatAddSkillTreeSkills(item, (SkillTree)layer, false);
 
-                    return new object[] { skillPoints };
+                    return new object[] { skillPoints, skillTrees[0] };
 
                 case 15:
                     var skill = (Skill)(layer >> 6);
@@ -546,6 +570,13 @@ namespace MapAssist.Types
 
         private static Dictionary<Stat, StatMetaData> StatCost = ExcelDataLoader.Parse(Properties.Resources.ItemStatCost).ToDictionary(x => (Stat)int.Parse(x["_index"]), x => new StatMetaData(x));
 
+        private static Dictionary<PlayerClass, CharStatsData> CharStats = ExcelDataLoader.Parse(Properties.Resources.CharStats).Select(x => new CharStatsData(x)).ToDictionary(x => x.PlayerClass, x => x);
+
+        public static Dictionary<Stat, int> StatPerLevelDivisors = ExcelDataLoader.Parse(Properties.Resources.Properties)
+            .Select(x => new { Key = StatProperty.GetStat(x), Value = StatProperty.GetDivisor(x) })
+            .Where(x => x.Key != Stat.Invalid && x.Value != 0)
+            .ToDictionary(x => x.Key, x => x.Value);
+
         public class StatMetaData
         {
             public string Stat { get; private set; }
@@ -572,10 +603,24 @@ namespace MapAssist.Types
             }
         }
 
-        public static Dictionary<Stat, int> StatPerLevelDivisors = ExcelDataLoader.Parse(Properties.Resources.Properties)
-            .Select(x => new { Key = StatProperty.GetStat(x), Value = StatProperty.GetDivisor(x) })
-            .Where(x => x.Key != Stat.Invalid && x.Value != 0)
-            .ToDictionary(x => x.Key, x => x.Value);
+        public class CharStatsData
+        {
+            public PlayerClass PlayerClass { get; private set; }
+            public string StrAllSkills { get; private set; }
+            public Dictionary<SkillTree, string> StrSkillTabs { get; private set; }
+            public string StrClassOnly { get; private set; }
+
+            public CharStatsData(Dictionary<string, string> data)
+            {
+                var skillTrees = Enum.GetValues(typeof(SkillTree)).Cast<SkillTree>().ToArray();
+                Enum.TryParse<PlayerClass>(data["class"], out var playerClass);
+
+                PlayerClass = playerClass;
+                StrAllSkills = data["StrAllSkills"];
+                StrSkillTabs = Enumerable.Range(0, 3).ToDictionary(x => skillTrees[(int)PlayerClass * 3 + x], x => data[$"StrSkillTab{x + 1}"]);
+                StrClassOnly = data["StrClassOnly"];
+            }
+        }
 
         private static class StatProperty
         {

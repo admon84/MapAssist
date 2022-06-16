@@ -609,6 +609,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Banner.png" />
+    <Content Include="Resources\Data\charstats.txt" />
     <Content Include="Resources\Data\itemstatcost.txt" />
     <Content Include="Resources\Data\properties.txt" />
     <Content Include="Sounds\Ching.wav">
