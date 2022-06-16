@@ -62,6 +62,17 @@ namespace MapAssist.Types
                 if (statsInGroup.Length == propertyStatsArgs.Length)
                 {
                     var args = propertyStatsArgs.Select(x => StatArgs(item, player, x[0].stat, x[0].layer, x[0].value)).SelectMany(x => x).ToArray();
+
+                    if (formatTextKey == "strModPoisonDamageRange")
+                    {
+                        var duration = (int)args[2] / 25;
+                        var multiplier = duration / 10.24; // Extra decimals to fix stupid rounding bugs in the next lines
+
+                        var min = Math.Round(((int)args[0]) * multiplier, 0, MidpointRounding.AwayFromZero);
+                        var max = Math.Round(((int)args[1]) * multiplier, 0, MidpointRounding.AwayFromZero);
+
+                        args = new object[] { (int)min, (int)max, duration };
+                    }
                     
                     if (formatTextKey.EndsWith("Range") && (int)args[0] == (int)args[1])
                     {
