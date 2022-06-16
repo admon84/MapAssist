@@ -12,8 +12,8 @@ namespace MapAssist.Types
     {
         private class StatLayerValue
         {
-            public ushort layer;
-            public int value;
+            public ushort Layer;
+            public int Value;
         }
 
         public static List<string> GetStatsText(UnitItem item, UnitPlayer player)
@@ -28,15 +28,15 @@ namespace MapAssist.Types
                 {
                     if (blueStats.ContainsKey(stat))
                     {
-                        var layers = blueStats[stat].Select(x => x.layer).Concat(statsList[stat].Select(x => x.layer).Reverse()).Distinct().ToArray();
+                        var layers = blueStats[stat].Select(x => x.Layer).Concat(statsList[stat].Select(x => x.Layer).Reverse()).Distinct().ToArray();
 
                         blueStats[stat] = layers.Select(layer =>
                         {
-                            var existingStat = blueStats[stat].FirstOrDefault(x => x.layer == layer);
-                            var addStat = statsList[stat].FirstOrDefault(x => x.layer == layer);
+                            var existingStat = blueStats[stat].FirstOrDefault(x => x.Layer == layer);
+                            var addStat = statsList[stat].FirstOrDefault(x => x.Layer == layer);
 
-                            return new StatLayerValue { layer = layer, value = (existingStat?.value ?? 0) + (addStat?.value ?? 0) };
-                        }).Where(x => x.value != 0).ToArray();
+                            return new StatLayerValue { Layer = layer, Value = (existingStat?.Value ?? 0) + (addStat?.Value ?? 0) };
+                        }).Where(x => x.Value != 0).ToArray();
                     }
                     else
                     {
@@ -58,13 +58,13 @@ namespace MapAssist.Types
             bool TryFormatGroupedStat(string formatTextKey, Stat[] statsInGroup)
             {
                 var propertyStatsArgs = statsInGroup
-                        .Select(x => blueStats.TryGetValue(x, out var statsLayers) ? statsLayers.Select(y => new { stat = x, y.layer, y.value }).ToArray() : null)
+                        .Select(x => blueStats.TryGetValue(x, out var statsLayers) ? statsLayers.Select(y => new { stat = x, y.Layer, y.Value }).ToArray() : null)
                         .Where(x => x != null)
                         .ToArray();
 
                 if (statsInGroup.Length == propertyStatsArgs.Length)
                 {
-                    var args = propertyStatsArgs.Select(x => StatArgs(item, player, x[0].stat, x[0].layer, x[0].value)).SelectMany(x => x).ToArray();
+                    var args = propertyStatsArgs.Select(x => StatArgs(item, player, x[0].stat, x[0].Layer, x[0].Value)).SelectMany(x => x).ToArray();
 
                     if (formatTextKey == "strModPoisonDamageRange")
                     {
@@ -123,7 +123,7 @@ namespace MapAssist.Types
                 {
                     foreach (var stats in statsList)
                     {
-                        var args = StatArgs(item, player, stat, stats.layer, stats.value).ToList();
+                        var args = StatArgs(item, player, stat, stats.Layer, stats.Value).ToList();
 
                         var isNegative = decimal.TryParse(args[0].ToString(), out var parseValue) && parseValue < 0;
 
@@ -188,15 +188,15 @@ namespace MapAssist.Types
 
             foreach (var socketItem in item.Sockets)
             {
-                var socketItemStats = socketItem.StatLayers?.ToDictionary(x => x.Key, x => x.Value.Select(y => new StatLayerValue { layer = y.Key, value = y.Value }).ToArray());
+                var socketItemStats = socketItem.StatLayers?.ToDictionary(x => x.Key, x => x.Value.Select(y => new StatLayerValue { Layer = y.Key, Value = y.Value }).ToArray());
 
                 AddBlueStats(socketItemStats);
             }
 
-            var addedStats = item.StatLayersAdded.ToDictionary(x => x.Key, x => x.Value.Select(y => new StatLayerValue { layer = y.Key, value = y.Value }).ToArray());
+            var addedStats = item.StatLayersAdded.ToDictionary(x => x.Key, x => x.Value.Select(y => new StatLayerValue { Layer = y.Key, Value = y.Value }).ToArray());
             AddBlueStats(addedStats);
 
-            var staffMods = item.StaffModsLayers.ToDictionary(x => x.Key, x => x.Value.Select(y => new StatLayerValue { layer = y.Key, value = y.Value }).ToArray());
+            var staffMods = item.StaffModsLayers.ToDictionary(x => x.Key, x => x.Value.Select(y => new StatLayerValue { Layer = y.Key, Value = y.Value }).ToArray());
             AddBlueStats(staffMods);
 
             var orderedStats = StatCost.Select(x => new { x.Key, x.Value })
