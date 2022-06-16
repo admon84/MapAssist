@@ -28,11 +28,14 @@ namespace MapAssist.Types
                 {
                     if (blueStats.ContainsKey(stat))
                     {
-                        blueStats[stat] = blueStats[stat].Reverse().Select(itemStat =>
-                        {
-                            var itemStaffMod = statsList[stat].FirstOrDefault(x => x.layer == itemStat.layer);
+                        var layers = blueStats[stat].Select(x => x.layer).Concat(statsList[stat].Select(x => x.layer).Reverse()).Distinct().ToArray();
 
-                            return new StatLayerValue { layer = itemStat.layer, value = itemStat.value + itemStaffMod.value };
+                        blueStats[stat] = layers.Select(layer =>
+                        {
+                            var existingStat = blueStats[stat].FirstOrDefault(x => x.layer == layer);
+                            var addStat = statsList[stat].FirstOrDefault(x => x.layer == layer);
+
+                            return new StatLayerValue { layer = layer, value = (existingStat?.value ?? 0) + (addStat?.value ?? 0) };
                         }).Where(x => x.value != 0).ToArray();
                     }
                     else
