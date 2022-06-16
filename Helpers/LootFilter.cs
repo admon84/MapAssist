@@ -86,9 +86,9 @@ namespace MapAssist.Helpers
                     }
                     else if (Enum.TryParse<Stats.Stat>(property.Name, out var stat))
                     {
-                        var value = (int)StatReader.GetAdjustedStatValue(stat, (int)propertyValue, adjustNegativeStats: true);
+                        var value = (int)StatReader.GetAdjustedStatValue(stat, StatReader.GetStatValue(item, stat), adjustNegativeStats: true);
 
-                        requirementMet &= value < 0 ? (int)propertyValue < 0 && value <= (int)propertyValue : value >= (int)propertyValue;
+                        requirementMet &= value < 0 ? (int)propertyValue < 0 && value <= (int)propertyValue : (int)propertyValue > 0 && value >= (int)propertyValue;
                     }
                     if (!requirementMet) break;
                 }
